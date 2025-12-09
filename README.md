@@ -1,1 +1,2 @@
 # PocketCart
+PocketCart is a point-of-sale (POS) system designed to simplify and digitalize the management of product inventories, barcode and QR code generation, and shopping cart transactions. It enables users to scan product barcodes using either a traditional USB barcode scanner or a mobile phone camera connected to the same network, ensuring flexibility in both desktop and mobile use. The system supports two user roles: administrators and regular users (cashiers), each with specific permissions tailored to their responsibilities.
