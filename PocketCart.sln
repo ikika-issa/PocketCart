@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37203.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PocketCartApp", "PocketCartApp", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocketCartApp.Web", "PocketCartApp.Web\PocketCartApp.Web.csproj", "{9259A95D-EACF-41D7-AFBD-B11677190389}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocketCartApp.Domain", "PocketCartApp.Domain\PocketCartApp.Domain.csproj", "{8093C063-9482-4A6E-9E10-FBC05485C3ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocketCartApp.Repository", "PocketCartApp.Repository\PocketCartApp.Repository.csproj", "{09F6B105-A4B5-4C76-A45A-287B5A342890}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocketCartApp.Service", "PocketCartApp.Service\PocketCartApp.Service.csproj", "{2C03E002-F094-4C7B-B6B1-EFE02158841E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9259A95D-EACF-41D7-AFBD-B11677190389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9259A95D-EACF-41D7-AFBD-B11677190389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9259A95D-EACF-41D7-AFBD-B11677190389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9259A95D-EACF-41D7-AFBD-B11677190389}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8093C063-9482-4A6E-9E10-FBC05485C3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8093C063-9482-4A6E-9E10-FBC05485C3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8093C063-9482-4A6E-9E10-FBC05485C3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8093C063-9482-4A6E-9E10-FBC05485C3ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09F6B105-A4B5-4C76-A45A-287B5A342890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09F6B105-A4B5-4C76-A45A-287B5A342890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09F6B105-A4B5-4C76-A45A-287B5A342890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09F6B105-A4B5-4C76-A45A-287B5A342890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C03E002-F094-4C7B-B6B1-EFE02158841E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C03E002-F094-4C7B-B6B1-EFE02158841E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C03E002-F094-4C7B-B6B1-EFE02158841E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C03E002-F094-4C7B-B6B1-EFE02158841E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9259A95D-EACF-41D7-AFBD-B11677190389} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{8093C063-9482-4A6E-9E10-FBC05485C3ED} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{09F6B105-A4B5-4C76-A45A-287B5A342890} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{2C03E002-F094-4C7B-B6B1-EFE02158841E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {83C953A0-814C-46B9-8435-E721D2F80B06}
+	EndGlobalSection
+EndGlobal
