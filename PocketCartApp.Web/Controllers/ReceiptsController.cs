@@ -62,53 +62,6 @@ namespace PocketCartApp.Web.Controllers
             return View(receipt);
         }
 
-        // GET: Receipts/Edit/5
-        public IActionResult Edit(Guid id)
-        {
-            var receipt = _receiptService.GetById(id);
-            if (receipt == null)
-            {
-                return NotFound();
-            }
-            //ViewData["ShoppingCartId"] = new SelectList(_context.ShoppingCarts, "Id", "Id", receipt.ShoppingCartId);
-            return View(receipt);
-        }
-
-        // POST: Receipts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("ShoppingCartId,total,currency,Id")] Receipt receipt)
-        {
-            if (id != receipt.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _receiptService.Update(receipt);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ReceiptExists(receipt.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            //ViewData["ShoppingCartId"] = new SelectList(_context.ShoppingCarts, "Id", "Id", receipt.ShoppingCartId);
-            return View(receipt);
-        }
-
         // GET: Receipts/Delete/5
         public IActionResult Delete(Guid id)
         {
@@ -133,11 +86,6 @@ namespace PocketCartApp.Web.Controllers
                 _receiptService.DeleteById(id);
             }
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ReceiptExists(Guid id)
-        {
-            return _receiptService.GetById(id) != null; 
         }
     }
 }

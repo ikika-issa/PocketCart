@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Identity_Models;
 using PocketCartApp.Repository;
+using PocketCartApp.Repository.Implementation;
+using PocketCartApp.Repository.Interface;
+using PocketCartApp.Service.Implementation;
+using PocketCartApp.Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +18,13 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<PocketCartApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
+builder.Services.AddTransient<IReceiptService, ReceiptingService>();
+builder.Services.AddTransient<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 
