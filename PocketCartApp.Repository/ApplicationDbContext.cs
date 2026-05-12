@@ -11,7 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<PocketCartApplicationUser>
         : base(options)
     {
     }
-    public virtual DbSet<Product> Products { get; set; }
+    public virtual DbSet<Product> Products { get; set;}
     public virtual DbSet<Receipt> Receipts { get; set; }
     public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
     public virtual DbSet<ProductInShoppingCart> ProductsInShoppingCarts { get; set; }

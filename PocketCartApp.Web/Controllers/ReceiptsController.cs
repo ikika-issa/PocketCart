@@ -55,7 +55,6 @@ namespace PocketCartApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                receipt.Id = Guid.NewGuid();
                 _receiptService.Insert(receipt);
                 return RedirectToAction(nameof(Index));
             }

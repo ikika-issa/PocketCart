@@ -56,7 +56,6 @@ namespace PocketCartApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                product.Id = Guid.NewGuid();
                 _productService.Insert(product);
              
                 return RedirectToAction(nameof(Index));
@@ -125,7 +124,7 @@ namespace PocketCartApp.Web.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        public IActionResult DeleteConfirmed(Guid id)
         {
             var product = _productService.GetById(id);
 

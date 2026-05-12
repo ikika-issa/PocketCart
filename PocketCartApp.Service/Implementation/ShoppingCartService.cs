@@ -37,10 +37,27 @@ namespace PocketCartApp.Service.Implementation
             _productInShoppingCartRepository.Delete(prodictInShoppingCart);
         }
 
+        public List<ShoppingCart> GetAll()
+        {
+            return _shoppingCartRepository.GetAll(selector: x => x).ToList();
+        }
+
+        public ShoppingCart? GetById(Guid id)
+        {
+            return _shoppingCartRepository.Get(selector: x => x,
+                                                       predicate: x => x.Id.Equals(id));
+        }
+
         public ShoppingCart? GetByUserId(Guid userId)
         {
             return _shoppingCartRepository.Get(selector: x => x,
                                                        predicate: x => x.CashierOnShift!.Equals(userId.ToString()));
+        }
+
+        public ShoppingCart Insert(ShoppingCart shoppingCart)
+        {
+            shoppingCart.Id = Guid.NewGuid();
+            return _shoppingCartRepository.Insert(shoppingCart);
         }
 
         public ShoppingCartDTO GetByUserIdWithIncludedPrducts(Guid userId)
