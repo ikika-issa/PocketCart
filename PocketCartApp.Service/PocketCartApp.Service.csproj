@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="iTextSharp" Version="5.5.13.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PocketCartApp.Repository\PocketCartApp.Repository.csproj" />
   </ItemGroup>
 

@@ -16,5 +16,7 @@ namespace PocketCartApp.Service.Interface
         ShoppingCartDTO GetByUserIdWithIncludedPrducts(Guid userId);
         List<ShoppingCart> GetAll();
         void DeleteProductFromShoppingCart(Guid productInShoppingCartId);
+        bool PrintReceipt(Guid userId);
+        
     }
 }
