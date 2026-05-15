@@ -4,15 +4,34 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PocketCartApp.Web</title>
+    <script>
+        (function () {
+            if (localStorage.getItem('pc-theme') === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PocketCartApp.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @{
+        var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+
+        string NavClass(string controller, string action = "Index")
+        {
+            return string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) &&
+                   string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase)
+                ? "nav-link text-dark active"
+                : "nav-link text-dark";
+        }
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PocketCartApp.Web</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Pocket Cart</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -20,22 +39,22 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="@NavClass("Home")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
+                            <a class="@NavClass("Home", "Privacy")" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
+                            <a class="@NavClass("Products")" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="ShoppingCarts" asp-action="Index">ShoppingCarts</a>
+                            <a class="@NavClass("Categories")" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="@NavClass("ShoppingCarts")" asp-area="" asp-controller="ShoppingCarts" asp-action="Index">ShoppingCarts</a>
                         </li>
 
                     </ul>
@@ -52,7 +71,16 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - PocketCartApp.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="footer-meta">
+                <span>&copy; 2026 - Pocket Cart -</span>
+                <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+            <div class="footer-actions">
+                <button class="theme-switch btn btn-sm" type="button" id="themeToggle" aria-pressed="false">
+                    <span class="theme-switch-dot" aria-hidden="true"></span>
+                    <span class="theme-switch-label">Light mode</span>
+                </button>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
