@@ -47,12 +47,6 @@ namespace PocketCartApp.Service.Implementation
             return _shoppingCartRepository.GetAll(selector: x => x).ToList();
         }
 
-        public ShoppingCart? GetById(Guid id)
-        {
-            return _shoppingCartRepository.Get(selector: x => x,
-                                                       predicate: x => x.Id.Equals(id));
-        }
-
         public ShoppingCart? GetByUserId(Guid userId)
         {
             return _shoppingCartRepository.Get(selector: x => x,
