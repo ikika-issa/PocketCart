@@ -29,23 +29,14 @@ namespace PocketCartApp.Web.Controllers
         }
 
         // GET: ShoppingCarts/Details/5
-        public IActionResult Details(Guid? id)
+        public IActionResult Details(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            //TO DO
-            var shoppingCart = 
-                .FirstOrDefaultAsync(m => m.Id == id);
-                .FirstOrDefaultAsync(m => m.Id == id);
-                .FirstOrDefaultAsync(m => m.Id == id);
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var shoppingCart = _shoppingCartService.GetById(id);
+
             if (shoppingCart == null)
             {
                 return NotFound();
             }
-
             return View(shoppingCart);
         }
 

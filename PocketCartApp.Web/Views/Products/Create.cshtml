@@ -27,9 +27,14 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="CategoryName" class="control-label"></label>
-                <input asp-for="CategoryName" class="form-control" />
-                <span asp-validation-for="CategoryName" class="text-danger"></span>
+                <label asp-for="CategoryId" class="control-label">Category</label>
+
+                <select asp-for="CategoryId"
+                        class="form-control"
+                        asp-items="ViewBag.Categories">
+                </select>
+
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -44,4 +49,12 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('#CategoryId').select2({
+                placeholder: "Select category",
+                allowClear: true
+            });
+        });
+    </script>
 }

@@ -55,7 +55,6 @@ namespace PocketCartApp.Service.Implementation
 
         public ShoppingCart Insert(ShoppingCart shoppingCart)
         {
-            shoppingCart.Id = Guid.NewGuid();
             return _shoppingCartRepository.Insert(shoppingCart);
         }
 
@@ -187,5 +186,11 @@ namespace PocketCartApp.Service.Implementation
 
                 document.Close();
             }
+
+        public ShoppingCart? GetById(Guid id)
+        {
+            return _shoppingCartRepository.Get(selector: x => x,
+                                                       predicate: x => x.Id.Equals(id));
+        }
     }
 }

@@ -28,6 +28,9 @@ builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddTransient<IReceiptService, ReceiptingService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
+builder.Services.AddTransient<ICategoryAPIService, CategoryAPIService>();
+
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

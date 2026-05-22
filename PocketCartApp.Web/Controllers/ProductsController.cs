@@ -14,10 +14,12 @@ namespace PocketCartApp.Web.Controllers
     public class ProductsController : Controller
     {
         private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
 
-        public ProductsController(IProductService productService)
+        public ProductsController(IProductService productService, ICategoryService categoryService)
         {
             _productService = productService;
+            _categoryService = categoryService;
         }
 
 
@@ -44,6 +46,14 @@ namespace PocketCartApp.Web.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            ViewBag.Categories = _categoryService.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.CategoryName
+                })
+                .ToList();
+
             return View();
         }
 
@@ -52,7 +62,7 @@ namespace PocketCartApp.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("ProductName,ProductPrice,CategoryId,CategoryName,Id")] Product product)
+        public IActionResult Create([Bind("ProductName,ProductPrice,CategoryId,Id")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -71,6 +81,15 @@ namespace PocketCartApp.Web.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.Categories = _categoryService.GetAll()
+               .Select(c => new SelectListItem
+               {
+                   Value = c.Id.ToString(),
+                   Text = c.CategoryName
+               })
+               .ToList();
+
             return View(product);
         }
 

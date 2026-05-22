@@ -14,16 +14,20 @@ namespace PocketCartApp.Web.Controllers
     public class CategoriesController : Controller
     {
         private readonly ICategoryService categoryService;
+        private readonly ICategoryAPIService categoryAPIService;
 
-        public CategoriesController(ICategoryService categoryService)
+        public CategoriesController(ICategoryService categoryService, ICategoryAPIService categoryAPIService)
         {
             this.categoryService = categoryService;
+            this.categoryAPIService = categoryAPIService;
         }
 
         // GET: Categories
-        public IActionResult Index()
+        public async Task<IActionResult>  Index()
         {
-            return View(categoryService.GetAll());
+            var categories = await categoryAPIService.FetchAllCategories();
+
+            return View(categories);
         }
 
         // GET: Categories/Details/5
@@ -132,6 +136,12 @@ namespace PocketCartApp.Web.Controllers
                 categoryService.DeleteById(id);
             }
 
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> FetchCategories()
+        {
+            await categoryAPIService.FetchAllCategories();
             return RedirectToAction(nameof(Index));
         }
 

@@ -18,6 +18,8 @@ namespace PocketCartApp.Domain.Domain_Models
         public string? CategoryName { get; set; }
         [Required]
         public DateOnly ExpirationDate { get; set; }
+        public double? quantity { get; set; }
+        public string? Manufacturer { get; set; }
         public virtual ICollection<ShoppingCart>? AllShoppingCarts { get; set; }
     }
 }
