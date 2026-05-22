@@ -16,6 +16,6 @@ namespace PocketCartApp.Service.Interface
         Product Update(Product product);
         Product DeleteById(Guid id);
         AddToCartDTO GetSelectedShoppingCartProduct(Guid id);
-        void AddProductToShoppingCart(Guid id, Guid cashierId, int quantity);
+        void AddProductToShoppingCart(Guid id, string cashierId, int quantity);
     }
 }

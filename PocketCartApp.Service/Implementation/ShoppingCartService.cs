@@ -47,10 +47,10 @@ namespace PocketCartApp.Service.Implementation
             return _shoppingCartRepository.GetAll(selector: x => x).ToList();
         }
 
-        public ShoppingCart? GetByUserId(Guid userId)
+        public ShoppingCart? GetByUserId(string userId)
         {
             return _shoppingCartRepository.Get(selector: x => x,
-                                                       predicate: x => x.CashierOnShift!.Equals(userId.ToString()));
+                                                       predicate: x => x.CashierOnShift!.Equals(userId));
         }
 
         public ShoppingCart Insert(ShoppingCart shoppingCart)
@@ -58,14 +58,14 @@ namespace PocketCartApp.Service.Implementation
             return _shoppingCartRepository.Insert(shoppingCart);
         }
 
-        public ShoppingCartDTO GetByUserIdWithIncludedPrducts(Guid userId)
+        public ShoppingCartDTO GetByUserIdWithIncludedPrducts(string userId)
         {
             var userCart = _shoppingCartRepository.Get(
                 selector: x => x,
                 predicate: x => x.CashierOnShift!.Equals(userId.ToString()),
                 include: x => x
                     .Include(z => z.ProductsInCart!)
-                    .ThenInclude(p => p.Product!.ProductName!)
+                    .ThenInclude(p => p.Product!)
             );
 
             var allProducts = userCart!.ProductsInCart!;
@@ -86,7 +86,7 @@ namespace PocketCartApp.Service.Implementation
             return model;
         }
 
-        public bool PrintReceipt(Guid userId)
+        public bool PrintReceipt(string userId)
         {
             var userCart = _shoppingCartRepository.Get(selector: x => x,
                                              predicate: x => x.CashierOnShift!.Equals(userId.ToString()),

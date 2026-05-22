@@ -171,6 +171,23 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                     counter++;
                 }
 
+                var year = DateTime.Now.Year;
+
+                var lastEmployee = _userManager.Users
+                    .Where(u => u.EmployeeId.StartsWith($"EMP-{year}-"))
+                    .OrderByDescending(u => u.EmployeeId)
+                    .FirstOrDefault();
+
+                int nextNumber = 1;
+
+                if (lastEmployee != null)
+                {
+                    var lastNumber = int.Parse(lastEmployee.EmployeeId.Split('-').Last());
+                    nextNumber = lastNumber + 1;
+                }
+
+                user.EmployeeId = $"EMP-{year}-{nextNumber:D4}";
+
                 await _userStore.SetUserNameAsync(user, customUserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 

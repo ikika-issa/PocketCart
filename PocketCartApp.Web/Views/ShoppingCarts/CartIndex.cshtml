@@ -1,0 +1,58 @@
+﻿@using PocketCartApp.Domain.Domain_Models
+@model ShoppingCart
+
+<h2>Cashier Cart</h2>
+
+@if (Model == null || Model.ProductsInCart == null || !Model.ProductsInCart.Any())
+{
+    <div class="alert alert-info">
+        Cart is empty.
+    </div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Barcode</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.ProductsInCart)
+            {
+                <tr>
+                    <td>@item.Product?.ProductName</td>
+                    <td>@item.Product?.ProductPrice</td>
+                    <td>@item.quantity</td>
+                    <td>@item.unit</td>
+                    <td>
+                        @(item.quantity * (item.Product?.ProductPrice ?? 0))
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <hr />
+
+    <h3>
+        Total:
+        @Model.ProductsInCart.Sum(x => x.quantity * (x.Product?.ProductPrice ?? 0))
+    </h3>
+
+    <div class="mt-3">
+        <a asp-action="Checkout" class="btn btn-success">
+            Checkout
+        </a>
+
+        <a asp-action="ClearCart" class="btn btn-danger">
+            Clear Cart
+        </a>
+    </div>
+}

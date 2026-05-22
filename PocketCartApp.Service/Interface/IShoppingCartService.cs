@@ -10,13 +10,13 @@ namespace PocketCartApp.Service.Interface
 {
     public interface IShoppingCartService
     {
-        ShoppingCart? GetByUserId(Guid userId);
+        ShoppingCart? GetByUserId(string userId);
         ShoppingCart? GetById(Guid id);
         ShoppingCart Insert(ShoppingCart shoppingCart);
-        ShoppingCartDTO GetByUserIdWithIncludedPrducts(Guid userId);
+        ShoppingCartDTO GetByUserIdWithIncludedPrducts(string userId);
         List<ShoppingCart> GetAll();
         void DeleteProductFromShoppingCart(Guid productInShoppingCartId);
-        bool PrintReceipt(Guid userId);
+        bool PrintReceipt(string userId);
         
     }
 }

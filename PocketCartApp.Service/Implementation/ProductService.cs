@@ -24,7 +24,7 @@ namespace PocketCartApp.Service.Implementation
             _shoppingCartService = shoppingCartService;
         }
 
-        public void AddProductToShoppingCart(Guid id, Guid cashierId, int quantity)
+        public void AddProductToShoppingCart(Guid id, string cashierId, int quantity)
         {
             var shoppingCart = _shoppingCartService.GetByUserId(cashierId);
 

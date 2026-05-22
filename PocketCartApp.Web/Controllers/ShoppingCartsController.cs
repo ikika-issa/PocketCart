@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
@@ -23,9 +24,18 @@ namespace PocketCartApp.Web.Controllers
 
 
         // GET: ShoppingCarts
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View(_shoppingCartService.GetAll());
+        }
+
+        public IActionResult CartIndex()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var shoppingCart = _shoppingCartService.GetByUserIdWithIncludedPrducts(userId!);
+            return View(shoppingCart);
         }
 
         // GET: ShoppingCarts/Details/5
