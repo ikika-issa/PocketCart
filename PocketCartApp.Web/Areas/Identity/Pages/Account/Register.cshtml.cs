@@ -154,12 +154,25 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
 
+                string first = Input.FirstName.Trim().ToLower();
+                string last = Input.LastName.Trim().ToLower();
+
+                string baseUserName = $"{first}.{last}@pocketcart.com";
+                string customUserName = baseUserName;
+
+                int counter = 1;
+
+                while (await _userManager.FindByNameAsync(customUserName) != null)
+                {
+                    customUserName = $"{first}.{last}{counter}@pocketcart.com";
+                    counter++;
+                }
+
+                await _userStore.SetUserNameAsync(user, customUserName, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -176,8 +189,29 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    try
+                    {
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await _emailSender.SendEmailAsync(
+                                    Input.Email,
+                                    "Confirm your email",
+                                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>."
+                                );
+                            }
+                            catch (Exception ex)
+                            {
+                                // log email failure (important)
+                                _logger.LogError(ex, "Email sending failed for {Email}", Input.Email);
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Task.Run failed");
+                    }
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
