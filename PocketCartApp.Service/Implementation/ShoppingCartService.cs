@@ -62,19 +62,28 @@ namespace PocketCartApp.Service.Implementation
         {
             var userCart = _shoppingCartRepository.Get(
                 selector: x => x,
-                predicate: x => x.CashierOnShift!.Equals(userId.ToString()),
+                predicate: x => x.CashierOnShift!.Equals(userId),
                 include: x => x
                     .Include(z => z.ProductsInCart!)
                     .ThenInclude(p => p.Product!)
             );
 
-            var allProducts = userCart!.ProductsInCart!;
+            if (userCart == null || userCart.ProductsInCart == null)
+            {
+                return new ShoppingCartDTO
+                {
+                    Products = new List<ProductInShoppingCart>(),
+                    TotalPrice = 0
+                };
+            }
+
+                var allProducts = userCart.ProductsInCart!;
 
             double totalPrice = 0.0;
 
             foreach (var item in allProducts)
             {
-                totalPrice += item.quantity * item.Product!.ProductPrice;
+                totalPrice += item.quantity * (item.Product?.ProductPrice ?? 0);
             }
 
             ShoppingCartDTO model = new ShoppingCartDTO

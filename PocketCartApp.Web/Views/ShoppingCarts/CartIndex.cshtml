@@ -1,9 +1,9 @@
-﻿@using PocketCartApp.Domain.Domain_Models
-@model ShoppingCart
+﻿@using PocketCartApp.Domain.DTO
+@model ShoppingCartDTO
 
 <h2>Cashier Cart</h2>
 
-@if (Model == null || Model.ProductsInCart == null || !Model.ProductsInCart.Any())
+@if (Model == null || Model.Products == null || !Model.Products.Any())
 {
     <div class="alert alert-info">
         Cart is empty.
@@ -24,7 +24,7 @@ else
         </thead>
 
         <tbody>
-            @foreach (var item in Model.ProductsInCart)
+            @foreach (var item in Model.Products)
             {
                 <tr>
                     <td>@item.Product?.ProductName</td>
@@ -43,7 +43,7 @@ else
 
     <h3>
         Total:
-        @Model.ProductsInCart.Sum(x => x.quantity * (x.Product?.ProductPrice ?? 0))
+        @Model.Products.Sum(x => x.quantity * (x.Product?.ProductPrice ?? 0))
     </h3>
 
     <div class="mt-3">
