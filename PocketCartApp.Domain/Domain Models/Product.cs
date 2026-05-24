@@ -21,5 +21,7 @@ namespace PocketCartApp.Domain.Domain_Models
         public double? quantity { get; set; }
         public string? Manufacturer { get; set; }
         public virtual ICollection<ShoppingCart>? AllShoppingCarts { get; set; }
+        public string? Barcode { get; set; }
+        public string? BarcodeImagePath { get; set; }
     }
 }
