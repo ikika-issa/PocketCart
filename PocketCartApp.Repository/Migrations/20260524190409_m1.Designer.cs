@@ -12,7 +12,7 @@ using PocketCartApp.Repository;
 namespace PocketCartApp.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260427093119_m1")]
+    [Migration("20260524190409_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -105,12 +105,10 @@ namespace PocketCartApp.Repository.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -147,12 +145,10 @@ namespace PocketCartApp.Repository.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -176,21 +172,46 @@ namespace PocketCartApp.Repository.Migrations
                     b.ToTable("Category");
                 });
 
+            modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.Manufacturer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ManufacturerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Manufacturers");
+                });
+
             modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Barcode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BarcodeImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("CategoryId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CategoryName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("ExpirationDate")
                         .HasColumnType("date");
+
+                    b.Property<Guid?>("ManufacturerId")
+                        .IsRequired()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -199,9 +220,15 @@ namespace PocketCartApp.Repository.Migrations
                     b.Property<double>("ProductPrice")
                         .HasColumnType("float");
 
+                    b.Property<double?>("quantity")
+                        .IsRequired()
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("ManufacturerId");
 
                     b.ToTable("Products");
                 });
@@ -417,7 +444,17 @@ namespace PocketCartApp.Repository.Migrations
                 {
                     b.HasOne("PocketCartApp.Domain.Domain_Models.Category", null)
                         .WithMany("ProductsInCategory")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PocketCartApp.Domain.Domain_Models.Manufacturer", "Manufacturer")
+                        .WithMany("Products")
+                        .HasForeignKey("ManufacturerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manufacturer");
                 });
 
             modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.ProductInShoppingCart", b =>
@@ -466,6 +503,11 @@ namespace PocketCartApp.Repository.Migrations
             modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.Category", b =>
                 {
                     b.Navigation("ProductsInCategory");
+                });
+
+            modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.Manufacturer", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.Product", b =>

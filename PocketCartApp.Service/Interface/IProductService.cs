@@ -12,7 +12,7 @@ namespace PocketCartApp.Service.Interface
     {
         List<Product> GetAll();
         Product? GetById(Guid id);
-        Product Insert(Product product);
+        Product Insert(Product product, string webRootPath);
         Product Update(Product product);
         Product DeleteById(Guid id);
         AddToCartDTO GetSelectedShoppingCartProduct(Guid id);

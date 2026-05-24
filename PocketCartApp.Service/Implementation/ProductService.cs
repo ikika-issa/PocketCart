@@ -15,13 +15,15 @@ namespace PocketCartApp.Service.Implementation
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<ProductInShoppingCart> _productInShoppingCartRepository;
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly IBarcodeService _barcodeService;
 
         public ProductService(IRepository<Product> productRepository, 
-            IRepository<ProductInShoppingCart> productInShoppingCartRepository, IShoppingCartService shoppingCartService)
+            IRepository<ProductInShoppingCart> productInShoppingCartRepository, IShoppingCartService shoppingCartService, IBarcodeService barcodeService)
         {
             _productRepository = productRepository;
             _productInShoppingCartRepository = productInShoppingCartRepository;
             _shoppingCartService = shoppingCartService;
+            _barcodeService = barcodeService;
         }
 
         public void AddProductToShoppingCart(Guid id, string cashierId, int quantity)
@@ -105,9 +107,16 @@ namespace PocketCartApp.Service.Implementation
             return addProductToCartModel;
         }
 
-        public Product Insert(Product product)
+        public Product Insert(Product product, string webRootPath)
         {
             product.Id = Guid.NewGuid();
+
+            var barcode = _barcodeService.GenerateEAN13();
+
+            product.Barcode = barcode;
+
+            product.BarcodeImagePath = _barcodeService.GenerateBarcodeImage(barcode, webRootPath);
+
             return _productRepository.Insert(product);
         }
 

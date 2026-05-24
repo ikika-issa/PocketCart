@@ -13,13 +13,16 @@ namespace PocketCartApp.Domain.Domain_Models
         public string? ProductName { get; set; }
         [Required]
         public double ProductPrice { get; set; }
-        public Guid? CategoryId { get; set; }
         [Required]
+        public Guid? CategoryId { get; set; }
         public string? CategoryName { get; set; }
         [Required]
         public DateOnly ExpirationDate { get; set; }
+        [Required]
         public double? quantity { get; set; }
-        public string? Manufacturer { get; set; }
+        [Required]
+        public Guid? ManufacturerId { get; set; }
+        public Manufacturer? Manufacturer { get; set; }
         public virtual ICollection<ShoppingCart>? AllShoppingCarts { get; set; }
         public string? Barcode { get; set; }
         public string? BarcodeImagePath { get; set; }

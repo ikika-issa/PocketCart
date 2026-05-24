@@ -36,6 +36,30 @@
 
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label asp-for="ManufacturerId" class="control-label">Manufacturer</label>
+
+                <select asp-for="ManufacturerId"
+                        class="form-control"
+                        asp-items="ViewBag.Manufacturers">
+                </select>
+
+                <span asp-validation-for="ManufacturerId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="quantity" class="control-label"></label>
+                <input asp-for="quantity" class="form-control" />
+                <span asp-validation-for="quantity" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ExpirationDate"></label>
+                <input asp-for="ExpirationDate" type="date" class="form-control" />
+                <span asp-validation-for="ExpirationDate" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

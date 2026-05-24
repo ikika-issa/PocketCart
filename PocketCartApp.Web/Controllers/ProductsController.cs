@@ -15,11 +15,13 @@ namespace PocketCartApp.Web.Controllers
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly IWebHostEnvironment _environment;
 
-        public ProductsController(IProductService productService, ICategoryService categoryService)
+        public ProductsController(IProductService productService, ICategoryService categoryService, IWebHostEnvironment environment)
         {
             _productService = productService;
             _categoryService = categoryService;
+            _environment = environment;
         }
 
 
@@ -62,14 +64,32 @@ namespace PocketCartApp.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("ProductName,ProductPrice,CategoryId,Id")] Product product)
+        public IActionResult Create([Bind("ProductName,ProductPrice,CategoryId,ExpirationDate, quantity, ManufacturerId")] Product product)
         {
             if (ModelState.IsValid)
             {
-                _productService.Insert(product);
+                _productService.Insert(product, _environment.WebRootPath);
              
                 return RedirectToAction(nameof(Index));
             }
+
+
+            foreach (var entry in ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    Console.WriteLine($"FIELD: {entry.Key} | ERROR: {error.ErrorMessage}");
+                }
+            }
+
+            ViewBag.Categories = _categoryService.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.CategoryName
+                })
+                .ToList();
+
             return View(product);
         }
 
@@ -98,7 +118,7 @@ namespace PocketCartApp.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("ProductName,ProductPrice,CategoryId,CategoryName,Id")] Product product)
+        public IActionResult Edit(Guid id, [Bind("ProductName,ProductPrice,CategoryId, ExpirationDate, quantity, ManufacturerId, Barcode, BarcodeImagePath, Id")] Product product)
         {
             if (id != product.Id)
             {
