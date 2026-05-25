@@ -1,6 +1,7 @@
 ﻿using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Domain.DTO;
 using PocketCartApp.Repository.Interface;
+using PocketCartApp.Service.API.Interface;
 using PocketCartApp.Service.Interface;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace PocketCartApp.Service.Implementation
+namespace PocketCartApp.Service.API.Implementation
 {
     public class CategoryAPIService : ICategoryAPIService
     {

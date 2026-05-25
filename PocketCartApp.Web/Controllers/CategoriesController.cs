@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Repository;
+using PocketCartApp.Service.API.Interface;
 using PocketCartApp.Service.Interface;
 
 namespace PocketCartApp.Web.Controllers

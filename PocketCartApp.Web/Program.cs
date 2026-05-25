@@ -9,6 +9,8 @@ using PocketCartApp.Repository;
 using PocketCartApp.Repository.Implementation;
 using PocketCartApp.Repository.Interface;
 using PocketCartApp.Repository.Seed;
+using PocketCartApp.Service.API.Implementation;
+using PocketCartApp.Service.API.Interface;
 using PocketCartApp.Service.Implementation;
 using PocketCartApp.Service.Interface;
 
@@ -26,6 +28,14 @@ builder.Services.AddIdentity<PocketCartApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddHttpClient<IOpenFoodFactsService, OpenFoodFactsService>(client =>
+{
+    client.BaseAddress = new Uri("https://world.openfoodfacts.org/");
+    client.DefaultRequestHeaders.UserAgent.ParseAdd(
+        "PocketCartApp/1.0 (contact: georgievskaeva@gmail.com)"
+    );
+});
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -35,7 +45,7 @@ builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddTransient<IReceiptService, ReceiptingService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<ICategoryAPIService, CategoryAPIService>();
-
+builder.Services.AddTransient<IManufacturerService, ManufacturerService>();
 
 builder.Services.AddScoped<IBarcodeService, BarcodeService>();
 builder.Services.AddScoped<IEmailService, EmailService>();

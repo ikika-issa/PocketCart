@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PocketCartApp.Service.Interface
+namespace PocketCartApp.Service.API.Interface
 {
     public interface ICategoryAPIService
     {

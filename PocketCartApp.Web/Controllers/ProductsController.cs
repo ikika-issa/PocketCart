@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Repository;
+using PocketCartApp.Service.API.Interface;
 using PocketCartApp.Service.Interface;
 
 namespace PocketCartApp.Web.Controllers
@@ -16,12 +17,14 @@ namespace PocketCartApp.Web.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly IWebHostEnvironment _environment;
+        private readonly IOpenFoodFactsService _productImportService;
 
-        public ProductsController(IProductService productService, ICategoryService categoryService, IWebHostEnvironment environment)
+        public ProductsController(IProductService productService, ICategoryService categoryService, IWebHostEnvironment environment, IOpenFoodFactsService productImportService)
         {
             _productService = productService;
             _categoryService = categoryService;
             _environment = environment;
+            _productImportService = productImportService;
         }
 
 
@@ -178,6 +181,15 @@ namespace PocketCartApp.Web.Controllers
         private bool ProductExists(Guid id)
         {
             return _productService.GetById(id) != null;
+        }
+
+        //API IMPLEMENTATION
+
+        public async Task<IActionResult> ImportSampleProducts()
+        {
+            await _productImportService.ImportSampleProductsAsync(_environment.WebRootPath);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
