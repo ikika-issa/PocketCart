@@ -21,8 +21,8 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="ProductPrice" class="control-label"></label>
-                <input asp-for="ProductPrice" class="form-control" />
+                <label asp-for="ProductPrice" class="control-label">Product Price</label>
+                <input asp-for="ProductPrice" type="number" min="1" class="form-control" width="20" />
                 <span asp-validation-for="ProductPrice" class="text-danger"></span>
             </div>
 
@@ -49,8 +49,8 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="quantity" class="control-label"></label>
-                <input asp-for="quantity" class="form-control" />
+                <label asp-for="quantity" class="control-label">Quantity</label>
+                <input asp-for="quantity" type="number" min ="1" class="form-control" width="20"/>
                 <span asp-validation-for="quantity" class="text-danger"></span>
             </div>
 

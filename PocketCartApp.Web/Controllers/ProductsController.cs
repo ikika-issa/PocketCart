@@ -18,13 +18,17 @@ namespace PocketCartApp.Web.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IWebHostEnvironment _environment;
         private readonly IOpenFoodFactsService _productImportService;
+        private readonly IManufacturerService _manufacturerService;
 
-        public ProductsController(IProductService productService, ICategoryService categoryService, IWebHostEnvironment environment, IOpenFoodFactsService productImportService)
+        public ProductsController(IProductService productService, ICategoryService categoryService, 
+            IWebHostEnvironment environment, IOpenFoodFactsService productImportService, 
+            IManufacturerService manufacturerService   )
         {
             _productService = productService;
             _categoryService = categoryService;
             _environment = environment;
             _productImportService = productImportService;
+            _manufacturerService = manufacturerService;
         }
 
 
@@ -56,6 +60,14 @@ namespace PocketCartApp.Web.Controllers
                 {
                     Value = c.Id.ToString(),
                     Text = c.CategoryName
+                })
+                .ToList();
+
+            ViewBag.Manufacturers = _manufacturerService.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.ManufacturerName
                 })
                 .ToList();
 
@@ -93,6 +105,14 @@ namespace PocketCartApp.Web.Controllers
                 })
                 .ToList();
 
+            ViewBag.Manufacturers = _manufacturerService.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.ManufacturerName
+                })
+                .ToList();
+
             return View(product);
         }
 
@@ -112,6 +132,14 @@ namespace PocketCartApp.Web.Controllers
                    Text = c.CategoryName
                })
                .ToList();
+
+            ViewBag.Manufacturers = _manufacturerService.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.ManufacturerName
+                })
+                .ToList();
 
             return View(product);
         }
