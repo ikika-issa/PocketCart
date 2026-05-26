@@ -24,11 +24,11 @@ namespace PocketCartApp.Web.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult>  Index()
+        public IActionResult Index()
         {
-            var categories = await categoryAPIService.FetchAllCategories();
+            //var categories = await categoryAPIService.FetchAllCategories();
 
-            return View(categories);
+            return View(categoryService.GetAll());
         }
 
         // GET: Categories/Details/5
@@ -140,6 +140,7 @@ namespace PocketCartApp.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //API
         public async Task<IActionResult> FetchCategories()
         {
             await categoryAPIService.FetchAllCategories();
