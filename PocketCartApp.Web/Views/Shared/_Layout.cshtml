@@ -57,11 +57,13 @@
                             <a class="@NavClass("Manufacturers")" asp-area="" asp-controller="Manufacturers" asp-action="Index">Manufacturers</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="@NavClass("ShoppingCarts")" asp-area="" asp-controller="ShoppingCarts" asp-action="Index">ShoppingCarts</a>
+                        </li>
+
                         @if (User.IsInRole("Admin"))
                         {
-                            <li class="nav-item">
-                                <a class="@NavClass("ShoppingCarts")" asp-area="" asp-controller="ShoppingCarts" asp-action="Index">ShoppingCarts</a>
-                            </li>
+                            //TODO: Add admin specific links here
                         }
 
                         <li class="nav-item">

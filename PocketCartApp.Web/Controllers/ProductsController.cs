@@ -88,14 +88,6 @@ namespace PocketCartApp.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            //foreach (var entry in ModelState)
-            //{
-            //    foreach (var error in entry.Value.Errors)
-            //    {
-            //        Console.WriteLine($"FIELD: {entry.Key} | ERROR: {error.ErrorMessage}");
-            //    }
-            //}
-
             ViewBag.Categories = _categoryService.GetAll()
                 .Select(c => new SelectListItem
                 {
