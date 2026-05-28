@@ -148,7 +148,7 @@ namespace PocketCartApp.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("ProductName,ProductPrice,CategoryId, ExpirationDate, quantity, ManufacturerId, Barcode, BarcodeImagePath, Id")] Product product)
+        public IActionResult Edit(Guid id, [Bind("ProductName,ProductPrice,CategoryId, ExpirationDate, quantity, ManufacturerId")] Product product)
         {
             if (id != product.Id)
             {
