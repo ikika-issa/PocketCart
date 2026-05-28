@@ -52,23 +52,140 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Barcode)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
+             <td class="editable" data-id="@item.Id" data-field="ProductName" data-type="text">
+                @item.ProductName
+            </td>
+            <td class="editable" data-id="@item.Id" data-field="ProductPrice" data-type="number">
+                @item.ProductPrice
+            </td>
+            <td class="editable-category" data-id="@item.Id" data-field="CategoryId" data-current="@item.CategoryId">
+                @item.CategoryName
+            </td>
+            <td class="editable" data-id="@item.Id" data-field="quantity" data-type="number">
+                @item.quantity
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ProductPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.quantity)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit product</a> 
                 <a asp-action="Delete" asp-route-id="@item.Id">Remove product</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".editable").forEach(cell => {
+            cell.addEventListener("dblclick", function () {
+                if (cell.querySelector("input")) return;
+
+                const oldValue = cell.innerText.trim();
+                const productId = cell.dataset.id;
+                const field = cell.dataset.field;
+                const type = cell.dataset.type || "text";
+
+                const input = document.createElement("input");
+                input.type = type;
+                input.value = oldValue;
+                input.className = "form-control form-control-sm";
+
+                if (type === "number") {
+                    input.step = "0.01";
+                    input.min = "0";
+                }
+
+                cell.innerHTML = "";
+                cell.appendChild(input);
+                input.focus();
+
+                function save() {
+                    const newValue = input.value;
+
+                    fetch(`/Products/UpdateInline?id=${productId}&field=${field}&value=${encodeURIComponent(newValue)}`, {
+                        method: "POST"
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            cell.innerText = newValue;
+                        } else {
+                            cell.innerText = oldValue;
+                            alert("Update failed.");
+                        }
+                    })
+                    .catch(() => {
+                        cell.innerText = oldValue;
+                        alert("Error while updating.");
+                    });
+                }
+
+                input.addEventListener("blur", save);
+
+                input.addEventListener("keydown", function (e) {
+                    if (e.key === "Enter") input.blur();
+                    if (e.key === "Escape") cell.innerText = oldValue;
+                });
+            });
+        });
+
+        document.querySelectorAll(".editable-category").forEach(cell => {
+            cell.addEventListener("dblclick", function () {
+                if (cell.querySelector("select")) return;
+
+                const oldText = cell.innerText.trim();
+                const productId = cell.dataset.id;
+                const field = cell.dataset.field;
+                const currentValue = cell.dataset.current;
+
+                const select = document.createElement("select");
+                select.className = "form-control form-control-sm";
+
+                const categories = [
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                            <text>{ value}: "@category.Value", text: "@category.Text" },</text>
+                    }
+                ];
+
+                categories.forEach(category => {
+                    const option = document.createElement("option");
+                    option.value = category.value;
+                    option.textContent = category.text;
+
+                    if (category.value === currentValue) {
+                        option.selected = true;
+                    }
+
+                    select.appendChild(option);
+                });
+
+                cell.innerHTML = "";
+                cell.appendChild(select);
+                select.focus();
+
+                function save() {
+                    const newValue = select.value;
+                    const newText = select.options[select.selectedIndex].text;
+
+                    fetch(`/Products/UpdateInline?id=${productId}&field=${field}&value=${newValue}`, {
+                        method: "POST"
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            cell.innerText = newText;
+                            cell.dataset.current = newValue;
+                        } else {
+                            cell.innerText = oldText;
+                            alert("Category update failed.");
+                        }
+                    })
+                    .catch(() => {
+                        cell.innerText = oldText;
+                        alert("Error while updating category.");
+                    });
+                }
+
+                select.addEventListener("blur", save);
+                select.addEventListener("change", save);
+            });
+        });
+    </script>
+}

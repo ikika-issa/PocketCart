@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
+using PocketCartApp.Domain.DTO;
 using PocketCartApp.Repository;
 using PocketCartApp.Service.API.Interface;
 using PocketCartApp.Service.Interface;
@@ -35,6 +37,14 @@ namespace PocketCartApp.Web.Controllers
         // GET: Products
         public IActionResult Index()
         {
+            ViewBag.Categories = _categoryService.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.CategoryName
+                })
+                .ToList();
+
             return View(_productService.GetAll());
         }
 
@@ -95,34 +105,6 @@ namespace PocketCartApp.Web.Controllers
                     Text = c.CategoryName
                 })
                 .ToList();
-
-            ViewBag.Manufacturers = _manufacturerService.GetAll()
-                .Select(c => new SelectListItem
-                {
-                    Value = c.Id.ToString(),
-                    Text = c.ManufacturerName
-                })
-                .ToList();
-
-            return View(product);
-        }
-
-        // GET: Products/Edit/5
-        public IActionResult Edit(Guid id)
-        {
-            var product = _productService.GetById(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Categories = _categoryService.GetAll()
-               .Select(c => new SelectListItem
-               {
-                   Value = c.Id.ToString(),
-                   Text = c.CategoryName
-               })
-               .ToList();
 
             ViewBag.Manufacturers = _manufacturerService.GetAll()
                 .Select(c => new SelectListItem
@@ -202,13 +184,59 @@ namespace PocketCartApp.Web.Controllers
             return _productService.GetById(id) != null;
         }
 
-        //API IMPLEMENTATION
+        public IActionResult AddProductToCart(AddToCartDTO model)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            _productService.AddProductToShoppingCart(model.SelectedProductId, userId!, model.Quantity);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        //API IMPLEMENTATION
         public async Task<IActionResult> ImportSampleProducts()
         {
             await _productImportService.ImportSampleProductsAsync(_environment.WebRootPath);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public IActionResult UpdateInline(Guid id, string field, string value)
+        {
+            var product = _productService.GetById(id);
+
+            if (product == null)
+                return NotFound();
+
+            switch (field)
+            {
+                case "ProductName":
+                    product.ProductName = value;
+                    break;
+
+                case "ProductPrice":
+                    product.ProductPrice = double.Parse(value);
+                    break;
+
+                case "quantity":
+                    product.quantity = double.Parse(value);
+                    break;
+
+                case "CategoryId":
+                    product.CategoryId = Guid.Parse(value);
+
+                    var category = _categoryService.GetById(product.CategoryId.Value);
+                    product.CategoryName = category?.CategoryName;
+                    break;
+
+                default:
+                    return BadRequest("Invalid field");
+            }
+
+            _productService.Update(product);
+
+            return Ok();
         }
     }
 }

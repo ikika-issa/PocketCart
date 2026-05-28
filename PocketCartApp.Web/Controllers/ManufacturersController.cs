@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Repository;
+using PocketCartApp.Service.Implementation;
 using PocketCartApp.Service.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
@@ -61,83 +62,27 @@ namespace PocketCartApp.Web.Controllers
             return View(manufacturer);
         }
 
-        // GET: Manufacturers/Edit/5
-        public IActionResult Edit(Guid id)
-        {
-            var manufacturer = _manufacturerService.GetById(id);
-
-            if (manufacturer == null)
-            {
-                return NotFound();
-            }
-            return View(manufacturer);
-        }
-
-        // POST: Manufacturers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("ManufacturerName,Id")] Manufacturer manufacturer)
-        {
-            if (id != manufacturer.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _manufacturerService.Update(manufacturer);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ManufacturerExists(manufacturer.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(manufacturer);
-        }
-
-        // GET: Manufacturers/Delete/5
-        public IActionResult Delete(Guid id)
+        public IActionResult UpdateInline(Guid id, string field, string value)
         {
             var manufacturer = _manufacturerService.GetById(id);
 
             if (manufacturer == null)
-            {
                 return NotFound();
-            }
 
-            return View(manufacturer);
-        }
-
-        // POST: Manufacturers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(Guid id)
-        {
-            var manufacturer = _manufacturerService.GetById(id);
-
-            if (manufacturer != null)
+            switch (field)
             {
-                _manufacturerService.DeleteById(id);
+                case "ManufacturerName":
+                    manufacturer.ManufacturerName = value;
+                    break;
+
+                default:
+                    return BadRequest("Invalid field");
             }
 
-            return RedirectToAction(nameof(Index));
-        }
+            _manufacturerService.Update(manufacturer);
 
-        private bool ManufacturerExists(Guid id)
-        {
-            return _manufacturerService.GetById(id) != null;
+            return Ok();
         }
     }
 }
