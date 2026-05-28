@@ -30,14 +30,6 @@ namespace PocketCartApp.Web.Controllers
             return View(_shoppingCartService.GetAll());
         }
 
-        public IActionResult CartIndex()
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var shoppingCart = _shoppingCartService.GetByUserIdWithIncludedPrducts(userId!);
-            return View(shoppingCart);
-        }
-
         // GET: ShoppingCarts/Details/5
         public IActionResult Details(Guid id)
         {
@@ -85,7 +77,12 @@ namespace PocketCartApp.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public IActionResult CartIndex()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-
+            var shoppingCart = _shoppingCartService.GetByUserIdWithIncludedPrducts(userId!);
+            return View(shoppingCart);
+        }
     }
 }
