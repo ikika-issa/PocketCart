@@ -16,5 +16,7 @@ namespace PocketCartApp.Domain.Identity_Models
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }  //IF CONTRACT IS FIXED
         public Contract_Type? contract_Type { get; set; }
+        public string? cashierId { get; set; }
+        public ShoppingCart? ShoppingCart { get; set; }
     }
 }

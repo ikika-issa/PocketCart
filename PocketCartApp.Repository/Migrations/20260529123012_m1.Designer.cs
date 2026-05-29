@@ -12,7 +12,7 @@ using PocketCartApp.Repository;
 namespace PocketCartApp.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260524190409_m1")]
+    [Migration("20260529123012_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -288,18 +288,17 @@ namespace PocketCartApp.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CashierId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("CashierOnShift")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid?>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CashierId");
+                    b.HasIndex("CashierOnShift")
+                        .IsUnique()
+                        .HasFilter("[CashierOnShift] IS NOT NULL");
 
                     b.HasIndex("ProductId");
 
@@ -372,6 +371,9 @@ namespace PocketCartApp.Repository.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("cashierId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("contract_Type")
                         .HasColumnType("int");
@@ -490,8 +492,8 @@ namespace PocketCartApp.Repository.Migrations
             modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.ShoppingCart", b =>
                 {
                     b.HasOne("PocketCartApp.Domain.Identity_Models.PocketCartApplicationUser", "Cashier")
-                        .WithMany()
-                        .HasForeignKey("CashierId");
+                        .WithOne("ShoppingCart")
+                        .HasForeignKey("PocketCartApp.Domain.Domain_Models.ShoppingCart", "CashierOnShift");
 
                     b.HasOne("PocketCartApp.Domain.Domain_Models.Product", null)
                         .WithMany("AllShoppingCarts")
@@ -518,6 +520,11 @@ namespace PocketCartApp.Repository.Migrations
             modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.ShoppingCart", b =>
                 {
                     b.Navigation("ProductsInCart");
+                });
+
+            modelBuilder.Entity("PocketCartApp.Domain.Identity_Models.PocketCartApplicationUser", b =>
+                {
+                    b.Navigation("ShoppingCart");
                 });
 #pragma warning restore 612, 618
         }

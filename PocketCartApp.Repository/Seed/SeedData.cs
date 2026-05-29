@@ -49,6 +49,13 @@ namespace PocketCartApp.Repository.Seed
                 await userManager.CreateAsync(newAdmin, "Admin123!");
 
                 await userManager.AddToRoleAsync(newAdmin, "Admin");
+
+                if (newAdmin.ShoppingCart == null)
+                {
+                    newAdmin.ShoppingCart = new Domain.Domain_Models.ShoppingCart();
+
+                    await userManager.UpdateAsync(newAdmin);
+                }
             }
         }
     }

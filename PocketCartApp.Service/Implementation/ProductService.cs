@@ -46,6 +46,37 @@ namespace PocketCartApp.Service.Implementation
 
         }
 
+        public void AddProductToShoppingCartByBarcode(string barcode, string cashierId)
+        {
+            if (string.IsNullOrWhiteSpace(barcode))
+            {
+                throw new Exception("Barcode cannot be empty.");
+            }
+
+            barcode = barcode.Trim();
+
+            if (barcode.Length != 13 || !barcode.All(char.IsDigit))
+            {
+                throw new Exception("Invalid EAN-13 barcode format.");
+            }
+
+            var shoppingCart = _shoppingCartService.GetByUserId(cashierId);
+
+            if (shoppingCart == null)
+            {
+                throw new Exception("Shopping cart not found.");
+            }
+
+            var product = GetByBarcode(barcode);
+
+            if (product == null)
+            {
+                throw new Exception("Product with this barcode was not found.");
+            }
+
+            UpdateCartItem(product, shoppingCart, 1);
+        }
+
         private void UpdateCartItem(Product product, ShoppingCart shoppingCart, int quantity)
         {
             var existingProduct = GetProductInShoppingCart(product.Id, shoppingCart.Id);
@@ -130,6 +161,12 @@ namespace PocketCartApp.Service.Implementation
         public Product Update(Product product)
         {
             return _productRepository.Update(product);
+        }
+
+        public Product? GetByBarcode(string barcode)
+        {
+            return _productRepository.Get(selector: x => x,
+                                           predicate: x => x.Barcode!.Equals(barcode));
         }
     }
 }

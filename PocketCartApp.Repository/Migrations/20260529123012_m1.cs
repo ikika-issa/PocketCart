@@ -36,6 +36,7 @@ namespace PocketCartApp.Repository.Migrations
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     contract_Type = table.Column<int>(type: "int", nullable: true),
+                    cashierId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -223,16 +224,15 @@ namespace PocketCartApp.Repository.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CashierOnShift = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CashierId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CashierOnShift = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ShoppingCarts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ShoppingCarts_AspNetUsers_CashierId",
-                        column: x => x.CashierId,
+                        name: "FK_ShoppingCarts_AspNetUsers_CashierOnShift",
+                        column: x => x.CashierOnShift,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -354,9 +354,11 @@ namespace PocketCartApp.Repository.Migrations
                 column: "ShoppingCartId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShoppingCarts_CashierId",
+                name: "IX_ShoppingCarts_CashierOnShift",
                 table: "ShoppingCarts",
-                column: "CashierId");
+                column: "CashierOnShift",
+                unique: true,
+                filter: "[CashierOnShift] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShoppingCarts_ProductId",

@@ -117,40 +117,6 @@ namespace PocketCartApp.Web.Controllers
             return View(product);
         }
 
-        // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("ProductName,ProductPrice,CategoryId, ExpirationDate, quantity, ManufacturerId")] Product product)
-        {
-            if (id != product.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _productService.Update(product);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(product);
-        }
-
         // GET: Products/Delete/5
         public IActionResult Delete(Guid id)
         {
@@ -191,6 +157,26 @@ namespace PocketCartApp.Web.Controllers
             _productService.AddProductToShoppingCart(model.SelectedProductId, userId!, model.Quantity);
 
             return RedirectToAction(nameof(Index));
+        }
+        
+        [HttpPost]
+        public IActionResult AddByBarcode(string barcode)
+        {
+            var cashierId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(cashierId))
+                return Unauthorized();
+
+            try
+            {
+                _productService.AddProductToShoppingCartByBarcode(barcode, cashierId);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction("CartIndex", "ShoppingCarts");
         }
 
         //API IMPLEMENTATION
