@@ -95,6 +95,8 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
             public int? duration { get; set; }
             public DateTime? EndDate { get; set; }
             public string EmployeeId { get; set; }
+            public Account_Status Account_Status { get; set; }
+            public ShoppingCart ShoppingCart { get; set; }
 
 
             /// <summary>
@@ -178,7 +180,7 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                     .OrderByDescending(u => u.EmployeeId)
                     .FirstOrDefault();
 
-                int nextNumber = 1;
+                int nextNumber = 2;
 
                 if (lastEmployee != null)
                 {
@@ -187,6 +189,12 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                 }
 
                 user.EmployeeId = $"EMP-{year}-{nextNumber:D4}";
+
+                user.StartDate = Input.StartDate;
+                user.contract_Type = Input.Contract_Type;
+                user.EndDate = user.StartDate.AddMonths(Input.duration ?? 0);
+                user.Account_Status = Input.Account_Status;
+                user.ShoppingCart = new ShoppingCart();
 
                 await _userStore.SetUserNameAsync(user, customUserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -236,7 +244,8 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        TempData["Success"] = "User created successfully.";
+                        //await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
                 }

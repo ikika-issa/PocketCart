@@ -28,4 +28,5 @@ public class ApplicationDbContext : IdentityDbContext<PocketCartApplicationUser>
     public virtual DbSet<ProductInShoppingCart> ProductsInShoppingCarts { get; set; }
     public virtual DbSet<Category> Category { get; set; }
     public virtual DbSet<Manufacturer> Manufacturers { get; set; }
+    public virtual DbSet<ProductInReceipt> ProductsInReceipts { get; set; }
 }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
+using PocketCartApp.Domain.Identity_Models;
 using PocketCartApp.Repository;
 using PocketCartApp.Service.Interface;
 using System;
@@ -16,10 +18,12 @@ namespace PocketCartApp.Web.Controllers
     public class ShoppingCartsController : Controller
     {
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly UserManager<PocketCartApplicationUser> _userManager;
 
-        public ShoppingCartsController(IShoppingCartService shoppingCartService)
+        public ShoppingCartsController(IShoppingCartService shoppingCartService, UserManager<PocketCartApplicationUser> userManager)
         {
             _shoppingCartService = shoppingCartService;
+            _userManager = userManager;
         }
 
 
@@ -83,6 +87,43 @@ namespace PocketCartApp.Web.Controllers
 
             var shoppingCart = _shoppingCartService.GetByUserIdWithIncludedPrducts(userId!);
             return View(shoppingCart);
+        }
+
+        public async Task<IActionResult> ClearCart(string cashierCode)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            if (user == null)
+                return Unauthorized();
+
+            if (user.cashierId != cashierCode)
+            {
+                TempData["Error"] = "Invalid Cashier ID.";
+                return RedirectToAction(nameof(CartIndex));
+            }
+
+            _shoppingCartService.ClearCart(userId!);
+
+            TempData["Success"] = "Cart cleared successfully.";
+
+            return RedirectToAction(nameof(CartIndex));
+        }
+
+        public IActionResult Checkout()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            _shoppingCartService.PrintReceipt(userId);
+            _shoppingCartService.ClearCart(userId);
+
+            return RedirectToAction(nameof(CartIndex));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Domain.Identity_Models;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,11 @@ namespace PocketCartApp.Repository.Seed
                     UserName = adminEmail,
                     Email = adminEmail,
                     FirstName = "Main",
+                    EmployeeId = "EMP -" + DateTime.Now.Year + "-001",
+                    StartDate = DateTime.Now,
+                    contract_Type = Contract_Type.Permanent,
+                    cashierId = "112233",
+                    Account_Status = Account_Status.Active,
                     LastName = "Admin"
                 };
 
@@ -52,7 +58,7 @@ namespace PocketCartApp.Repository.Seed
 
                 if (newAdmin.ShoppingCart == null)
                 {
-                    newAdmin.ShoppingCart = new Domain.Domain_Models.ShoppingCart();
+                    newAdmin.ShoppingCart = new ShoppingCart();
 
                     await userManager.UpdateAsync(newAdmin);
                 }

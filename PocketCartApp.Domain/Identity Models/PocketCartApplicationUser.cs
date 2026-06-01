@@ -18,5 +18,6 @@ namespace PocketCartApp.Domain.Identity_Models
         public Contract_Type? contract_Type { get; set; }
         public string? cashierId { get; set; }
         public ShoppingCart? ShoppingCart { get; set; }
+        public Account_Status Account_Status { get; set; }
     }
 }
