@@ -18,18 +18,6 @@ namespace PocketCartApp.Service.Implementation
             _receiptRepository = receiptRepository;
         }
 
-        public Receipt DeleteById(Guid id)
-        {
-            var receipt = GetById(id);
-            if (receipt == null)
-            {
-                throw new Exception("Receipt not found");
-            }
-
-            _receiptRepository.Delete(receipt);
-            return receipt;
-        }
-
         public List<Receipt> GetAll()
         {
             return _receiptRepository.GetAll(selector: x => x).ToList();

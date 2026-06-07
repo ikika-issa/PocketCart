@@ -14,6 +14,5 @@ namespace PocketCartApp.Service.Interface
         Receipt? GetById(Guid id);
         Receipt Insert(Receipt receipt);
         Receipt Update(Receipt receipt);
-        Receipt DeleteById(Guid id);
     }
 }

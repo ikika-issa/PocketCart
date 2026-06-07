@@ -1,4 +1,4 @@
-﻿using iTextSharp.text.pdf;
+using iTextSharp.text.pdf;
 using iTextSharp.text;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
@@ -47,41 +47,43 @@ namespace PocketCartApp.Service.Implementation
             return _shoppingCartRepository.GetAll(selector: x => x).ToList();
         }
 
-        public ShoppingCart? GetById(Guid id)
+        public ShoppingCart? GetByUserId(string userId)
         {
             return _shoppingCartRepository.Get(selector: x => x,
-                                                       predicate: x => x.Id.Equals(id));
-        }
-
-        public ShoppingCart? GetByUserId(Guid userId)
-        {
-            return _shoppingCartRepository.Get(selector: x => x,
-                                                       predicate: x => x.CashierOnShift!.Equals(userId.ToString()));
+                                                       predicate: x => x.CashierOnShift == userId);
         }
 
         public ShoppingCart Insert(ShoppingCart shoppingCart)
         {
-            shoppingCart.Id = Guid.NewGuid();
             return _shoppingCartRepository.Insert(shoppingCart);
         }
 
-        public ShoppingCartDTO GetByUserIdWithIncludedPrducts(Guid userId)
+        public ShoppingCartDTO GetByUserIdWithIncludedPrducts(string userId)
         {
             var userCart = _shoppingCartRepository.Get(
                 selector: x => x,
-                predicate: x => x.CashierOnShift!.Equals(userId.ToString()),
+                predicate: x => x.CashierOnShift == userId,
                 include: x => x
                     .Include(z => z.ProductsInCart!)
-                    .ThenInclude(p => p.Product!.ProductName!)
+                    .ThenInclude(p => p.Product!)
             );
 
-            var allProducts = userCart!.ProductsInCart!;
+            if (userCart == null || userCart.ProductsInCart == null)
+            {
+                return new ShoppingCartDTO
+                {
+                    Products = new List<ProductInShoppingCart>(),
+                    TotalPrice = 0
+                };
+            }
+
+                var allProducts = userCart.ProductsInCart!;
 
             double totalPrice = 0.0;
 
             foreach (var item in allProducts)
             {
-                totalPrice += item.quantity * item.Product!.ProductPrice;
+                totalPrice += item.quantity * (item.Product?.ProductPrice ?? 0);
             }
 
             ShoppingCartDTO model = new ShoppingCartDTO
@@ -93,10 +95,10 @@ namespace PocketCartApp.Service.Implementation
             return model;
         }
 
-        public bool PrintReceipt(Guid userId)
+        public bool PrintReceipt(string userId)
         {
             var userCart = _shoppingCartRepository.Get(selector: x => x,
-                                             predicate: x => x.CashierOnShift!.Equals(userId.ToString()),
+                                             predicate: x => x.CashierOnShift == userId,
                                              include: x => x.Include(z => z.ProductsInCart!).ThenInclude(m => m.Product!));
 
             if (userCart == null ||
@@ -193,5 +195,29 @@ namespace PocketCartApp.Service.Implementation
 
                 document.Close();
             }
+
+        public ShoppingCart? GetById(Guid id)
+        {
+            return _shoppingCartRepository.Get(selector: x => x,
+                                                       predicate: x => x.Id.Equals(id));
+        }
+
+        public void ClearCart(string userId)
+        {
+            var shoppingCart = _shoppingCartRepository.Get(selector: x => x,
+                                                       predicate: x => x.CashierOnShift == userId,
+                                                       include: x => x.Include(z => z.ProductsInCart!));
+            if (shoppingCart == null)
+            {
+                throw new Exception("Shopping cart not found for the user.");
+            }
+
+            var cartItems = _productInShoppingCartRepository.GetAll(selector: x => x,
+                                                        predicate: x => x.ShoppingCartId.Equals(shoppingCart.Id)).ToList();
+            foreach (var item in cartItems)
+            {
+                _productInShoppingCartRepository.Delete(item);
+            }
+        }
     }
 }

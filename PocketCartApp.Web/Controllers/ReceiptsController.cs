@@ -61,31 +61,5 @@ namespace PocketCartApp.Web.Controllers
             //ViewData["ShoppingCartId"] = new SelectList(_context.ShoppingCarts, "Id", "Id", receipt.ShoppingCartId);
             return View(receipt);
         }
-
-        // GET: Receipts/Delete/5
-        public IActionResult Delete(Guid id)
-        {
-            var receipt = _receiptService.GetById(id);
-            if (receipt == null)
-            {
-                return NotFound();
-            }
-
-            return View(receipt);
-        }
-
-        // POST: Receipts/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(Guid id)
-        {
-            var receipt = _receiptService.GetById(id);
-
-            if (receipt != null)
-            {
-                _receiptService.DeleteById(id);
-            }
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

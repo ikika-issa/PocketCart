@@ -95,6 +95,8 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
             public int? duration { get; set; }
             public DateTime? EndDate { get; set; }
             public string EmployeeId { get; set; }
+            public Account_Status Account_Status { get; set; }
+            public ShoppingCart ShoppingCart { get; set; }
 
 
             /// <summary>
@@ -154,12 +156,48 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
 
+                string first = Input.FirstName.Trim().ToLower();
+                string last = Input.LastName.Trim().ToLower();
+
+                string baseUserName = $"{first}.{last}@pocketcart.com";
+                string customUserName = baseUserName;
+
+                int counter = 1;
+
+                while (await _userManager.FindByNameAsync(customUserName) != null)
+                {
+                    customUserName = $"{first}.{last}{counter}@pocketcart.com";
+                    counter++;
+                }
+
+                var year = DateTime.Now.Year;
+
+                var lastEmployee = _userManager.Users
+                    .Where(u => u.EmployeeId.StartsWith($"EMP-{year}-"))
+                    .OrderByDescending(u => u.EmployeeId)
+                    .FirstOrDefault();
+
+                int nextNumber = 2;
+
+                if (lastEmployee != null)
+                {
+                    var lastNumber = int.Parse(lastEmployee.EmployeeId.Split('-').Last());
+                    nextNumber = lastNumber + 1;
+                }
+
+                user.EmployeeId = $"EMP-{year}-{nextNumber:D4}";
+
+                user.StartDate = Input.StartDate;
+                user.contract_Type = Input.Contract_Type;
+                user.EndDate = user.StartDate.AddMonths(Input.duration ?? 0);
+                user.Account_Status = Input.Account_Status;
+                user.ShoppingCart = new ShoppingCart();
+
+                await _userStore.SetUserNameAsync(user, customUserName, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -176,8 +214,29 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    try
+                    {
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await _emailSender.SendEmailAsync(
+                                    Input.Email,
+                                    "Confirm your email",
+                                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>."
+                                );
+                            }
+                            catch (Exception ex)
+                            {
+                                // log email failure (important)
+                                _logger.LogError(ex, "Email sending failed for {Email}", Input.Email);
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Task.Run failed");
+                    }
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -185,7 +244,8 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        TempData["Success"] = "User created successfully.";
+                        //await _signInManager.SignInAsync(user, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
                 }

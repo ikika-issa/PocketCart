@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Repository;
+using PocketCartApp.Service.API.Interface;
 using PocketCartApp.Service.Interface;
 
 namespace PocketCartApp.Web.Controllers
@@ -14,15 +15,19 @@ namespace PocketCartApp.Web.Controllers
     public class CategoriesController : Controller
     {
         private readonly ICategoryService categoryService;
+        private readonly ICategoryAPIService categoryAPIService;
 
-        public CategoriesController(ICategoryService categoryService)
+        public CategoriesController(ICategoryService categoryService, ICategoryAPIService categoryAPIService)
         {
             this.categoryService = categoryService;
+            this.categoryAPIService = categoryAPIService;
         }
 
         // GET: Categories
         public IActionResult Index()
         {
+            //var categories = await categoryAPIService.FetchAllCategories();
+
             return View(categoryService.GetAll());
         }
 
@@ -132,6 +137,13 @@ namespace PocketCartApp.Web.Controllers
                 categoryService.DeleteById(id);
             }
 
+            return RedirectToAction(nameof(Index));
+        }
+
+        //API
+        public async Task<IActionResult> FetchCategories()
+        {
+            await categoryAPIService.FetchAllCategories();
             return RedirectToAction(nameof(Index));
         }
 
