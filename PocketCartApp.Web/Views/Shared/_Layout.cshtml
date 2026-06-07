@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -65,7 +65,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="@NavClass("ShoppingCarts")" asp-area="" asp-controller="ShoppingCarts" asp-action="Index">ShoppingCarts</a>
+                            <a class="@NavClass("ShoppingCarts", "Index")" asp-area="" asp-controller="ShoppingCarts" asp-action="Index">ShoppingCarts</a>
                         </li>
 
                         @if (User.IsInRole("Admin"))
@@ -74,7 +74,11 @@
                         }
 
                         <li class="nav-item">
-                            <a class="@NavClass("ShoppingCarts")" asp-area="" asp-controller="ShoppingCarts" asp-action="CartIndex">Cart</a>
+                            <a class="@NavClass("ShoppingCarts", "Scanner")" asp-area="" asp-controller="ShoppingCarts" asp-action="Scanner">Scanner</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="@NavClass("ShoppingCarts", "CartIndex")" asp-area="" asp-controller="ShoppingCarts" asp-action="CartIndex">Cart</a>
                         </li>
 
                     </ul>
@@ -89,7 +93,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer">
         <div class="container">
             <div class="footer-meta">
                 <span>&copy; 2026 - Pocket Cart -</span>

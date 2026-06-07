@@ -1,4 +1,4 @@
-﻿using PocketCartApp.Domain.Domain_Models;
+using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Domain.DTO;
 using PocketCartApp.Repository.Interface;
 using PocketCartApp.Service.Interface;
@@ -154,8 +154,7 @@ namespace PocketCartApp.Service.Implementation
         private ProductInShoppingCart? GetProductInShoppingCart(Guid productId, Guid cartId)
         {
             return _productInShoppingCartRepository.Get(selector: x => x,
-                predicate: x => x.ShoppingCartId.ToString() == cartId.ToString()
-                                                && x.ProductId.ToString() == productId.ToString());
+                predicate: x => x.ShoppingCartId == cartId && x.ProductId == productId);
         }
 
         public Product Update(Product product)

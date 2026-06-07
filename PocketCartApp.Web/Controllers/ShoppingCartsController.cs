@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
+    [Authorize]
     public class ShoppingCartsController : Controller
     {
         private readonly IShoppingCartService _shoppingCartService;
@@ -124,6 +125,11 @@ namespace PocketCartApp.Web.Controllers
             _shoppingCartService.ClearCart(userId);
 
             return RedirectToAction(nameof(CartIndex));
+        }
+
+        public IActionResult Scanner()
+        {
+            return View();
         }
     }
 }

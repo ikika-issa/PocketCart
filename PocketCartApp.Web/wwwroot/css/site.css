@@ -42,7 +42,9 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
   min-height: 100vh;
   color: var(--pc-text);
   background:
@@ -202,4 +204,64 @@ html[data-theme="light"] .navbar .navbar-nav .nav-link {
 
 .text-muted {
   color: var(--pc-muted) !important;
+}
+
+/* --- Modern Floating Navbar --- */
+header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  padding: 0.85rem 1.5rem 0.25rem 1.5rem !important;
+  pointer-events: none !important;
+}
+
+header * {
+  pointer-events: auto !important;
+}
+
+.navbar {
+  max-width: 1400px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  border-radius: 18px !important;
+  padding: 0.65rem 1.5rem !important;
+  background: linear-gradient(135deg, rgba(14, 21, 34, 0.85), rgba(8, 11, 19, 0.94)) !important;
+  border: 1px solid rgba(25, 230, 178, 0.18) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(20px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.navbar::after {
+  display: none !important;
+}
+
+html[data-theme="light"] .navbar {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(240, 245, 253, 0.94)) !important;
+  border: 1px solid rgba(18, 184, 134, 0.22) !important;
+  box-shadow: 0 16px 36px rgba(16, 24, 40, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Nav links styling */
+.navbar .nav-link {
+  border-radius: 10px !important;
+  padding: 0.6rem 1.2rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.navbar .nav-link:hover {
+  transform: translateY(-1px) !important;
+}
+
+/* Navbar Brand text hover shadow */
+.navbar-brand {
+  transition: text-shadow 0.3s ease !important;
+}
+
+.navbar-brand:hover {
+  text-shadow: 0 0 12px rgba(25, 230, 178, 0.5) !important;
+}
+
+html[data-theme="light"] .navbar-brand:hover {
+  text-shadow: 0 0 12px rgba(18, 184, 134, 0.4) !important;
 }

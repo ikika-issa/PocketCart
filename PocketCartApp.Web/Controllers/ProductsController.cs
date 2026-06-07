@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -223,6 +223,34 @@ namespace PocketCartApp.Web.Controllers
             _productService.Update(product);
 
             return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult AddByBarcodeAjax([FromBody] BarcodeRequest model)
+        {
+            var cashierId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(cashierId))
+                return Unauthorized(new { success = false, message = "Unauthorized" });
+
+            if (model == null || string.IsNullOrWhiteSpace(model.Barcode))
+                return BadRequest(new { success = false, message = "Barcode is empty" });
+
+            try
+            {
+                _productService.AddProductToShoppingCartByBarcode(model.Barcode, cashierId);
+                var product = _productService.GetByBarcode(model.Barcode);
+                return Ok(new { success = true, productName = product?.ProductName, price = product?.ProductPrice });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        public class BarcodeRequest
+        {
+            public string Barcode { get; set; } = string.Empty;
         }
     }
 }

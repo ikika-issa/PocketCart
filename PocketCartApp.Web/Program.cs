@@ -20,7 +20,14 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(connectionString);
+    if (connectionString.Contains(".db") || (connectionString.Contains("Data Source=") && !connectionString.Contains("Server=") && !connectionString.Contains("localdb")))
+    {
+        options.UseSqlite(connectionString);
+    }
+    else
+    {
+        options.UseSqlServer(connectionString);
+    }
 });
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -63,7 +70,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
+    dbContext.Database.EnsureCreated();
 }
 
 // Configure the HTTP request pipeline.
@@ -98,6 +105,15 @@ using (var scope = app.Services.CreateScope())
 
     await SeedData.SeedRoles(services);
     await SeedData.SeedAdmin(services);
+
+    // Auto-import sample products if database is empty
+    var productService = services.GetRequiredService<IProductService>();
+    if (!productService.GetAll().Any())
+    {
+        var productImportService = services.GetRequiredService<IOpenFoodFactsService>();
+        var env = services.GetRequiredService<IWebHostEnvironment>();
+        await productImportService.ImportSampleProductsAsync(env.WebRootPath);
+    }
 }
 
 app.Run();

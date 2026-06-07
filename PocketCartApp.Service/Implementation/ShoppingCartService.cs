@@ -1,4 +1,4 @@
-﻿using iTextSharp.text.pdf;
+using iTextSharp.text.pdf;
 using iTextSharp.text;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
@@ -50,7 +50,7 @@ namespace PocketCartApp.Service.Implementation
         public ShoppingCart? GetByUserId(string userId)
         {
             return _shoppingCartRepository.Get(selector: x => x,
-                                                       predicate: x => x.CashierOnShift!.Equals(userId));
+                                                       predicate: x => x.CashierOnShift == userId);
         }
 
         public ShoppingCart Insert(ShoppingCart shoppingCart)
@@ -62,7 +62,7 @@ namespace PocketCartApp.Service.Implementation
         {
             var userCart = _shoppingCartRepository.Get(
                 selector: x => x,
-                predicate: x => x.CashierOnShift!.Equals(userId),
+                predicate: x => x.CashierOnShift == userId,
                 include: x => x
                     .Include(z => z.ProductsInCart!)
                     .ThenInclude(p => p.Product!)
@@ -98,7 +98,7 @@ namespace PocketCartApp.Service.Implementation
         public bool PrintReceipt(string userId)
         {
             var userCart = _shoppingCartRepository.Get(selector: x => x,
-                                             predicate: x => x.CashierOnShift!.Equals(userId.ToString()),
+                                             predicate: x => x.CashierOnShift == userId,
                                              include: x => x.Include(z => z.ProductsInCart!).ThenInclude(m => m.Product!));
 
             if (userCart == null ||
@@ -205,7 +205,7 @@ namespace PocketCartApp.Service.Implementation
         public void ClearCart(string userId)
         {
             var shoppingCart = _shoppingCartRepository.Get(selector: x => x,
-                                                       predicate: x => x.CashierOnShift!.Equals(userId),
+                                                       predicate: x => x.CashierOnShift == userId,
                                                        include: x => x.Include(z => z.ProductsInCart!));
             if (shoppingCart == null)
             {
