@@ -201,5 +201,23 @@ namespace PocketCartApp.Service.Implementation
             return _shoppingCartRepository.Get(selector: x => x,
                                                        predicate: x => x.Id.Equals(id));
         }
+
+        public void ClearCart(string userId)
+        {
+            var shoppingCart = _shoppingCartRepository.Get(selector: x => x,
+                                                       predicate: x => x.CashierOnShift!.Equals(userId),
+                                                       include: x => x.Include(z => z.ProductsInCart!));
+            if (shoppingCart == null)
+            {
+                throw new Exception("Shopping cart not found for the user.");
+            }
+
+            var cartItems = _productInShoppingCartRepository.GetAll(selector: x => x,
+                                                        predicate: x => x.ShoppingCartId.Equals(shoppingCart.Id)).ToList();
+            foreach (var item in cartItems)
+            {
+                _productInShoppingCartRepository.Delete(item);
+            }
+        }
     }
 }

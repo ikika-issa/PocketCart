@@ -41,12 +41,22 @@
                 <span asp-validation-for="Input.Contract_Type" class="text-danger"></span>
             </div>
 
-            <div class="form-group mt-3" id="durationField" style="display:none;">
-                <label asp-for="Input.duration"></label>
-                <input asp-for="Input.duration" class="form-control" placeholder="Duration in months" />
-                <span asp-validation-for="Input.duration" class="text-danger"></span>
+             <div class="form-group mt-3" id="durationField" style="display:none;">
+                    <label asp-for="Input.duration">Duration in Months</label>
+                    <input asp-for="Input.duration" class="form-control" placeholder="Duration in months" />
+                    <span asp-validation-for="Input.duration" class="text-danger"></span>
             </div>
 
+            <div class="form-group">
+                <label asp-for="Input.Account_Status" class="control-label">Account status</label>
+
+                <select asp-for="Input.Account_Status"
+                        class="form-control"
+                        asp-items="Html.GetEnumSelectList<Account_Status>()">
+                </select>
+
+                <span asp-validation-for="Input.Account_Status" class="text-danger"></span>
+            </div>
 
             <div class="form-floating mb-3">
                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
@@ -106,23 +116,22 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const contractType = document.getElementById("Input_ContractType");
+            const contractType = document.getElementById("Input_Contract_Type");
             const durationField = document.getElementById("durationField");
 
-            function toggleDuration() {
-                // If enum value is Fixed (usually 1)
-                if (contractType.value === "Fixed" || contractType.value === "1") {
+            function toggleDurationField() {
+                const selectedText =
+                    contractType.options[contractType.selectedIndex].text;
+
+                if (selectedText === "Fixed") {
                     durationField.style.display = "block";
                 } else {
                     durationField.style.display = "none";
                 }
             }
 
-            // Run when page loads
-            toggleDuration();
-
-            // Run when dropdown changes
-            contractType.addEventListener("change", toggleDuration);
+            contractType.addEventListener("change", toggleDurationField);
+            toggleDurationField();
         });
     </script>
 }
