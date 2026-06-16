@@ -58,7 +58,11 @@ namespace PocketCartApp.Repository.Seed
 
                 if (newAdmin.ShoppingCart == null)
                 {
-                    newAdmin.ShoppingCart = new ShoppingCart();
+                    newAdmin.ShoppingCart = new ShoppingCart
+                        { 
+                            Id = Guid.NewGuid(),  
+                            CashierOnShift = newAdmin.Id
+                        };
 
                     await userManager.UpdateAsync(newAdmin);
                 }

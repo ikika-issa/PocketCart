@@ -37,6 +37,7 @@ namespace PocketCartApp.Repository.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     contract_Type = table.Column<int>(type: "int", nullable: true),
                     cashierId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Account_Status = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -62,7 +63,7 @@ namespace PocketCartApp.Repository.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -199,8 +200,8 @@ namespace PocketCartApp.Repository.Migrations
                     ExpirationDate = table.Column<DateOnly>(type: "date", nullable: false),
                     quantity = table.Column<double>(type: "float", nullable: false),
                     ManufacturerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Barcode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BarcodeImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Barcode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BarcodeImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -224,7 +225,7 @@ namespace PocketCartApp.Repository.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CashierOnShift = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CashierOnShift = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -234,7 +235,8 @@ namespace PocketCartApp.Repository.Migrations
                         name: "FK_ShoppingCarts_AspNetUsers_CashierOnShift",
                         column: x => x.CashierOnShift,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ShoppingCarts_Products_ProductId",
                         column: x => x.ProductId,
@@ -275,6 +277,8 @@ namespace PocketCartApp.Repository.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ShoppingCartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    userId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PocketCartApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     total = table.Column<double>(type: "float", nullable: false),
                     currency = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -282,9 +286,40 @@ namespace PocketCartApp.Repository.Migrations
                 {
                     table.PrimaryKey("PK_Receipts", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Receipts_AspNetUsers_PocketCartApplicationUserId",
+                        column: x => x.PocketCartApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Receipts_ShoppingCarts_ShoppingCartId",
                         column: x => x.ShoppingCartId,
                         principalTable: "ShoppingCarts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductsInReceipts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReceiptId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductsInReceipts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductsInReceipts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductsInReceipts_Receipts_ReceiptId",
+                        column: x => x.ReceiptId,
+                        principalTable: "Receipts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -339,6 +374,16 @@ namespace PocketCartApp.Repository.Migrations
                 column: "ManufacturerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductsInReceipts_ProductId",
+                table: "ProductsInReceipts",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductsInReceipts_ReceiptId",
+                table: "ProductsInReceipts",
+                column: "ReceiptId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductsInShoppingCarts_ProductId",
                 table: "ProductsInShoppingCarts",
                 column: "ProductId");
@@ -349,6 +394,11 @@ namespace PocketCartApp.Repository.Migrations
                 column: "ShoppingCartId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Receipts_PocketCartApplicationUserId",
+                table: "Receipts",
+                column: "PocketCartApplicationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Receipts_ShoppingCartId",
                 table: "Receipts",
                 column: "ShoppingCartId");
@@ -357,8 +407,7 @@ namespace PocketCartApp.Repository.Migrations
                 name: "IX_ShoppingCarts_CashierOnShift",
                 table: "ShoppingCarts",
                 column: "CashierOnShift",
-                unique: true,
-                filter: "[CashierOnShift] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShoppingCarts_ProductId",
@@ -385,13 +434,16 @@ namespace PocketCartApp.Repository.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ProductsInReceipts");
+
+            migrationBuilder.DropTable(
                 name: "ProductsInShoppingCarts");
 
             migrationBuilder.DropTable(
-                name: "Receipts");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "Receipts");
 
             migrationBuilder.DropTable(
                 name: "ShoppingCarts");

@@ -194,7 +194,7 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                 user.contract_Type = Input.Contract_Type;
                 user.EndDate = user.StartDate.AddMonths(Input.duration ?? 0);
                 user.Account_Status = Input.Account_Status;
-                user.ShoppingCart = new ShoppingCart();
+           
 
                 await _userStore.SetUserNameAsync(user, customUserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -205,8 +205,18 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+
+                    user.ShoppingCart = new ShoppingCart
+                    {
+                        Id = Guid.NewGuid(),
+                        CashierOnShift = user.Id
+                    };
+
+                    await _userManager.UpdateAsync(user);
+
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",

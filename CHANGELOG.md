@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 01-06-2026
+## UP UNTIL 01-06-2026
 
 ### ADDED
 - Clear Cart function
@@ -29,4 +29,46 @@
 - Make the search bars in the Manufacturers page functional
 - Make the search bars in the Products page functional
 - Make the search bars in the Categories page functional
-- Add a function to add a product via the barcode image
+- Add a function to add a product via the barcode image [DONE]
+
+//ENTER CHANGES HERE STEFAN
+
+## 16-06-2026
+
+### ADDED
+- Employee controller with Index function that returns a list of employees, disable account action and enable account action.
+- Employee Index View where there is a list of all accounts and their statuses
+- In the Index table the disable button appears if the account is active, if not the enable account button is visible
+- Added a Employee button in LoginPartial.cshtml linking it to the Employee controller
+- Added a restriction for the Employee controller to be only viewed by admin users
+- Added a userId to the Receipt to mark the cashier that printed that receipt
+
+
+### FIXED
+- Added [Required] above every attribute in the Product Domain Model
+- All non-nullable attributes in Receipt are forced - domain model
+- All non-nullable attributes in Categories are forced - domain model
+- Added authorization for admin role in Manufacturers controller for security
+- Added authorization for admin role in Receipts controller for security
+- Added authorization for admin role in Categories controller for security
+- Added authorization for ShoppingCarts controller for security
+- Added authorization for Products Controller for security
+- Added authorization for Receipts Controller for security
+- All non-nullable attributes in Manufacturer are forced - domain model
+- All non-nullable attributes in ShoppingCart are forced - domain model
+- Linked shopping cart with user upon registering (after making the cashierOnShift required i had to change
+the approach of adding a cart to a user upon registering)
+- Linked shopping cart with admin seed (same reason as above)
+- Hid the Categories, Manufacturers, Products buttons in Layout.cshtml for admin view only
+- Users log in with usernames now, not emails
+ 
+
+### TO-DO
+- Make the search bars in the Manufacturers Index page functional
+- Make the search bars in the Products Index page functional
+- Make the search bars in the Categories Index page functional
+- Make the search bars in the Products Index page functional
+- Edit the Register.cshtml to look in theme
+- Edit the Views/Employees/Index.cshtml to look in theme
+- Edit the Login.cshtml to look in theme
+- When clicking on the name of the logged in user a drop down menu appears. Change it to fit into theme

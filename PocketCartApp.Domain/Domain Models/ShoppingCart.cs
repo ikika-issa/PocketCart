@@ -9,7 +9,7 @@ namespace PocketCartApp.Domain.Domain_Models
 {
     public class ShoppingCart : BaseEntity
     {
-        public string? CashierOnShift { get; set; } //LOGGED IN USER ID
+        public required string CashierOnShift { get; set; } //LOGGED IN USER ID
         public PocketCartApplicationUser? Cashier { get; set; }
         public virtual ICollection<ProductInShoppingCart>? ProductsInCart { get; set; }
     }

@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Repository;
 using PocketCartApp.Service.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
+    [Authorize]
     public class ReceiptsController : Controller
     {
         private readonly IReceiptService _receiptService;
@@ -20,13 +23,20 @@ namespace PocketCartApp.Web.Controllers
             _receiptService = receiptService;
         }
 
-        // GET: Receipts
-        public IActionResult Index()
+        [Authorize(Roles = "Admin")]
+        public IActionResult IndexAllReceipts()
         {
             return View(_receiptService.GetAll());
         }
 
-        // GET: Receipts/Details/5
+        [Authorize(Roles = "Cashier")]
+        public IActionResult IndexUserReceipts()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return View(_receiptService.GetAll());
+        }
+
         public IActionResult Details(Guid id)
         {
             var receipt = _receiptService.GetById(id);
@@ -36,29 +46,6 @@ namespace PocketCartApp.Web.Controllers
                 return NotFound();
             }
 
-            return View(receipt);
-        }
-
-        // GET: Receipts/Create
-        public IActionResult Create()
-        {
-            //ViewData["ShoppingCartId"] = new SelectList(_context.ShoppingCarts, "Id", "Id");
-            return View(_receiptService.GetAll());
-        }
-
-        // POST: Receipts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("ShoppingCartId,total,currency,Id")] Receipt receipt)
-        {
-            if (ModelState.IsValid)
-            {
-                _receiptService.Insert(receipt);
-                return RedirectToAction(nameof(Index));
-            }
-            //ViewData["ShoppingCartId"] = new SelectList(_context.ShoppingCarts, "Id", "Id", receipt.ShoppingCartId);
             return View(receipt);
         }
     }

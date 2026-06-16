@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
+    [Authorize]
     public class ShoppingCartsController : Controller
     {
         private readonly IShoppingCartService _shoppingCartService;

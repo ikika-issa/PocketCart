@@ -23,6 +23,11 @@ namespace PocketCartApp.Service.Implementation
             return _receiptRepository.GetAll(selector: x => x).ToList();
         }
 
+        public List<Receipt> GetAllByUserId(string userId)
+        {
+            return _receiptRepository.GetAll(selector: x => x, predicate: x => x.userId == userId).ToList();
+        }
+
         public Receipt? GetById(Guid id)
         {
             return _receiptRepository.Get(selector: x => x, predicate: x => x.Id.Equals(id));
