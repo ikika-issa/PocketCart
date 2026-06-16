@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 
 </head>
@@ -52,25 +53,23 @@
                             <a class="@NavClass("Home")" asp-area="" asp-controller="Home" asp-action="Index">Dashboards</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="@NavClass("Products")" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="@NavClass("Categories")" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="@NavClass("Manufacturers")" asp-area="" asp-controller="Manufacturers" asp-action="Index">Manufacturers</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="@NavClass("ShoppingCarts", "Index")" asp-area="" asp-controller="ShoppingCarts" asp-action="Index">ShoppingCarts</a>
-                        </li>
 
                         @if (User.IsInRole("Admin"))
                         {
-                            //TODO: Add admin specific links here
+                            <li class="nav-item">
+                                <a class="@NavClass("Products")" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="@NavClass("Categories")" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="@NavClass("Manufacturers")" asp-area="" asp-controller="Manufacturers" asp-action="Index">Manufacturers</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="@NavClass("ShoppingCarts")" asp-area="" asp-controller="ShoppingCarts" asp-action="Index">ShoppingCarts</a>
+                            </li>
                         }
 
                         <li class="nav-item">

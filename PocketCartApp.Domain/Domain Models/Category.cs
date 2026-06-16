@@ -8,7 +8,7 @@ namespace PocketCartApp.Domain.Domain_Models
 {
     public class Category : BaseEntity
     {
-        public string? CategoryName { get; set; }
+        public required string CategoryName { get; set; }
         public virtual ICollection<Product>? ProductsInCategory { get; set; }
     }
 }

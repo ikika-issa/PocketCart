@@ -36,6 +36,11 @@ builder.Services.AddIdentity<PocketCartApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+});
+
 builder.Services.AddHttpClient<IOpenFoodFactsService, OpenFoodFactsService>(client =>
 {
     client.BaseAddress = new Uri("https://world.openfoodfacts.org/");

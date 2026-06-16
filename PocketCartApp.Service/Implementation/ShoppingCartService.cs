@@ -121,6 +121,7 @@ namespace PocketCartApp.Service.Implementation
             {
                 Id = Guid.NewGuid(),
                 ShoppingCartId = userCart.Id,
+                userId = userId,
                 total = totalPrice,
                 currency = "MKD"
             };

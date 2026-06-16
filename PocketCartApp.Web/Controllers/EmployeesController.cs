@@ -1,0 +1,58 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using PocketCartApp.Domain.Identity_Models;
+
+namespace PocketCartApp.Web.Controllers
+{
+    [Authorize(Roles = "Admin")]
+    public class EmployeesController : Controller
+    {
+        private readonly UserManager<PocketCartApplicationUser> _userManager;
+
+        public EmployeesController(UserManager<PocketCartApplicationUser> userManager)
+        {
+            _userManager = userManager;
+        }
+
+        public IActionResult Index()
+        {
+            var employees = _userManager.Users.ToList();
+            return View(employees);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Disable(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            user.LockoutEnabled = true;
+            user.LockoutEnd = DateTimeOffset.MaxValue;
+
+            await _userManager.UpdateAsync(user);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Enable(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            user.LockoutEnd = null;
+
+            await _userManager.UpdateAsync(user);
+
+            return RedirectToAction(nameof(Index));
+        }
+    }
+}

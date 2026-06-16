@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +7,15 @@ using PocketCartApp.Domain.DTO;
 using PocketCartApp.Repository;
 using PocketCartApp.Service.API.Interface;
 using PocketCartApp.Service.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly IProductService _productService;
@@ -34,7 +36,7 @@ namespace PocketCartApp.Web.Controllers
         }
 
 
-        // GET: Products
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             ViewBag.Categories = _categoryService.GetAll()
@@ -48,7 +50,7 @@ namespace PocketCartApp.Web.Controllers
             return View(_productService.GetAll());
         }
 
-        // GET: Products/Details/5
+        
         public IActionResult Details(Guid id)
         {
 
@@ -212,7 +214,7 @@ namespace PocketCartApp.Web.Controllers
                 case "CategoryId":
                     product.CategoryId = Guid.Parse(value);
 
-                    var category = _categoryService.GetById(product.CategoryId.Value);
+                    var category = _categoryService.GetById(product.CategoryId);
                     product.CategoryName = category?.CategoryName;
                     break;
 

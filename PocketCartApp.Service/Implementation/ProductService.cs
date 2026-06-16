@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Domain.DTO;
 using PocketCartApp.Repository.Interface;
@@ -5,6 +6,7 @@ using PocketCartApp.Service.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -113,6 +115,7 @@ namespace PocketCartApp.Service.Implementation
             return product;
         }
 
+        
         public List<Product> GetAll()
         {
             return _productRepository.GetAll(selector: x => x).ToList();

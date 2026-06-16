@@ -14,6 +14,5 @@ namespace PocketCartApp.Domain.Domain_Models
         public ShoppingCart? ShoppingCart { get; set; }
         public double quantity {  get; set; }
         public string? unit {  get; set; } 
-        //FOR SOME IT MIGHT BE LITERS, FOR OTHERS KG ETC OR JUST A NUMBER DEPENDING ON THE CATEGORY OF THE PRODUCT
     }
 }
