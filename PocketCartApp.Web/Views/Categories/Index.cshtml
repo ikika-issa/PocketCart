@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PocketCartApp.Domain.Domain_Models.Category>
+@model IEnumerable<PocketCartApp.Domain.Domain_Models.Category>
 
 @{
     ViewData["Title"] = "Index";
@@ -8,14 +8,21 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-outline-primary mb-2">Create New</a>
+    <button id="toggleFilters" class="btn btn-primary mb-2">
+        Toggle Filters
+    </button>
 </p>
-<table class="table">
+<table class="table" id="categoriesTable">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.CategoryName)
             </th>
+            <th></th>
+        </tr>
+        <tr class="filters" style="display:none;">
+            <th><input type="text" class="form-control form-control-sm" placeholder="Search Category" /></th>
             <th></th>
         </tr>
     </thead>
@@ -34,3 +41,30 @@
 }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const table = $('#categoriesTable').DataTable({
+                orderCellsTop: true
+            });
+
+            $('#toggleFilters').on('click', function () {
+                $('.filters').toggle();
+            });
+
+            $('.filters th').each(function (index) {
+                const input = $(this).find('input');
+
+                if (input.length) {
+                    input.on('keyup change clear', function () {
+                        table
+                            .column(index)
+                            .search(this.value)
+                            .draw();
+                    });
+                }
+            });
+        });
+    </script>
+}

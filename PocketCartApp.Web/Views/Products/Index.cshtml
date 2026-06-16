@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PocketCartApp.Domain.Domain_Models.Product>
+@model IEnumerable<PocketCartApp.Domain.Domain_Models.Product>
 
 @{
     ViewData["Title"] = "Index";
@@ -8,9 +8,12 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create product</a>
+    <a asp-action="Create" class="btn btn-outline-primary mb-2">Create product</a>
+    <button id="toggleFilters" class="btn btn-primary mb-2">
+        Toggle Filters
+    </button>
 </p>
-<table class="table">
+<table class="table" id="productsTable">
     <thead>
         <tr>
             <th>
@@ -31,6 +34,15 @@
             <th>
                 @Html.DisplayNameFor(model => model.quantity)
             </th>
+            <th></th>
+        </tr>
+        <tr class="filters" style="display:none;">
+            <th></th>
+            <th><input type="text" class="form-control form-control-sm" placeholder="Search Barcode" /></th>
+            <th><input type="text" class="form-control form-control-sm" placeholder="Search Name" /></th>
+            <th><input type="text" class="form-control form-control-sm" placeholder="Search Price" /></th>
+            <th><input type="text" class="form-control form-control-sm" placeholder="Search Category" /></th>
+            <th><input type="text" class="form-control form-control-sm" placeholder="Search Quantity" /></th>
             <th></th>
         </tr>
     </thead>
@@ -185,6 +197,31 @@
 
                 select.addEventListener("blur", save);
                 select.addEventListener("change", save);
+            });
+        });
+    </script>
+    
+    <script>
+        $(document).ready(function () {
+            const table = $('#productsTable').DataTable({
+                orderCellsTop: true
+            });
+
+            $('#toggleFilters').on('click', function () {
+                $('.filters').toggle();
+            });
+
+            $('.filters th').each(function (index) {
+                const input = $(this).find('input');
+
+                if (input.length) {
+                    input.on('keyup change clear', function () {
+                        table
+                            .column(index)
+                            .search(this.value)
+                            .draw();
+                    });
+                }
             });
         });
     </script>
