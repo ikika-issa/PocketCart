@@ -6,13 +6,16 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item">
-            <a class="nav-link text-dark"
-               asp-controller="Employees"
-               asp-action="Index">
-                Employees
-            </a>
-        </li>
+        @if(!User.IsInRole("Cashier"))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark"
+                   asp-controller="Employees"
+                   asp-action="Index">
+                    Employees
+                </a>
+            </li>
+        }
 
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-dark"
@@ -26,7 +29,6 @@
 
             <ul class="dropdown-menu dropdown-menu-end"
                 aria-labelledby="userDropdown">
-
                 <li>
                     <a class="dropdown-item"
                        asp-area="Identity"
@@ -44,7 +46,6 @@
                           asp-area="Identity"
                           asp-page="/Account/Logout"
                           asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-
                         @Html.AntiForgeryToken()
 
                         <button type="submit" class="dropdown-item">

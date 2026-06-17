@@ -23,14 +23,12 @@ namespace PocketCartApp.Web.Controllers
             _manufacturerService = manufacturerService;
         }
 
-        // GET: Manufacturers
         public IActionResult Index()
         {
             var manufacturers = _manufacturerService.GetAll();
             return View(manufacturers);
         }
 
-        // GET: Manufacturers/Details/5
         public IActionResult Details(Guid id)
         {
             var manufacturer = _manufacturerService.GetById(id);    

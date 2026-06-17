@@ -1,48 +1,62 @@
 @model IEnumerable<PocketCartApp.Domain.Domain_Models.Category>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categories";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Categories</h2>
+        <p class="text-muted mb-0">
+            View and manage categories
+        </p>
+    </div>
+</div>
 
 <p>
-    <a asp-action="Create" class="btn btn-outline-primary mb-2">Create New</a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-outline-primary mb-2">Add new</a>
+    }
     <button id="toggleFilters" class="btn btn-primary mb-2">
         Toggle Filters
     </button>
 </p>
 
-<table class="table" id="categoriesTable">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
-            </th>
-            <th></th>
-        </tr>
-        <tr class="filters" style="display:none;">
-            <th><input type="text" class="form-control form-control-sm" placeholder="Search Category" /></th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td class="editable"
-                data-id="@item.Id"
-                data-field="CategoryName"
-                data-type="text">
-                @item.CategoryName
-             </td>
-            <td>
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="products-card">
+    <table class="table align-middle mb-0" id="categoriesTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.CategoryName)
+                </th>
+                <th></th>
+            </tr>
+            <tr class="filters" style="display:none;">
+                <th><input type="text" class="form-control form-control-sm" placeholder="Search Category" /></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+
+    @foreach (var item in Model) {
+            <tr>
+                <td class="editable"
+                    data-id="@item.Id"
+                    data-field="CategoryName"
+                    data-type="text">
+                    @item.CategoryName
+                 </td>
+                <td>
+                     <a asp-action="Delete" class="btn btn-primary mb-2" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>
+
 
 @section Scripts {
     <script>

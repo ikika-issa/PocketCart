@@ -275,6 +275,9 @@ namespace PocketCartApp.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("PaidAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("PocketCartApplicationUserId")
                         .HasColumnType("TEXT");
 

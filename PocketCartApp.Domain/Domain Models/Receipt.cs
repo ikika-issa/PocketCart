@@ -17,6 +17,7 @@ namespace PocketCartApp.Domain.Domain_Models
         public PocketCartApplicationUser? PocketCartApplicationUser { get; set; }
         [Display(Name = "Total")]
         public double total { get; set; }
+        public DateTime PaidAt { get; set; }
         public string? currency {  get; set; } //WILL BE A DROP DOWN MENU N SEARCH FOR THEM TO CHOOSE A CURRENCY, ALLOWS FLEXIBILITY
     }
 }

@@ -35,8 +35,7 @@ namespace PocketCartApp.Web.Controllers
             _manufacturerService = manufacturerService;
         }
 
-
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult Index()
         {
             ViewBag.Categories = _categoryService.GetAll()
@@ -58,6 +57,7 @@ namespace PocketCartApp.Web.Controllers
             return View(_productService.GetAll());
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewBag.Categories = _categoryService.GetAll()
@@ -79,9 +79,7 @@ namespace PocketCartApp.Web.Controllers
             return View();
         }
 
-        // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("ProductName,ProductPrice,CategoryId,ExpirationDate, quantity, ManufacturerId")] Product product)
@@ -112,7 +110,7 @@ namespace PocketCartApp.Web.Controllers
             return View(product);
         }
 
-        // POST: Products/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
@@ -149,7 +147,7 @@ namespace PocketCartApp.Web.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                return BadRequest(ex.Message);
             }
 
             return RedirectToAction("CartIndex", "ShoppingCarts");
@@ -162,6 +160,7 @@ namespace PocketCartApp.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
 
         [HttpPost]
         public IActionResult UpdateInline(Guid id, string field, string value)

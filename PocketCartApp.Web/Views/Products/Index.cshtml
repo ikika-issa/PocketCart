@@ -1,7 +1,7 @@
 @model IEnumerable<PocketCartApp.Domain.Domain_Models.Product>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Products";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -15,7 +15,10 @@
 </div>
 
 <p>
-    <a asp-action="Create" class="btn btn-outline-primary mb-2"> Create </a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-outline-primary mb-2">Add new</a>
+    }
     <button id="toggleFilters" class="btn btn-outline-success mb-2">
         Toggle Filters
     </button>
@@ -48,7 +51,11 @@
                 <th>
                     @Html.DisplayNameFor(model => model.quantity)
                 </th>
-                <th></th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th></th>
+                }
+                
             </tr>
             <tr class="filters" style="display:none;">
                 <th></th>
@@ -80,41 +87,48 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Barcode)
                 </td>
-                 <td class="editable" data-id="@item.Id" data-field="ProductName" data-type="text">
+                <td class="" @(User.IsInRole("Admin") ? "editable" : "")"" data-id="@item.Id" data-field="ProductName" data-type="text">
                     @item.ProductName
                 </td>
-                <td class="editable"
+                <td class="" @(User.IsInRole("Admin") ? "editable" : "")""
                      data-id="@item.Id"
                      data-field="ProductPrice"
                      data-type="number"
                      data-value="@item.ProductPrice">
                      @item.ProductPrice MKD
                 </td>
-                <td class="editable-manufacturer"
+                <td class="@(User.IsInRole("Admin") ? "editable-manufacturer" : "")"
                      data-id="@item.Id"
                      data-field="ManufacturerId"
                      data-current="@item.ManufacturerId">
                     @(item.Manufacturer != null ? item.Manufacturer.ManufacturerName : "No manufacturer")
                 </td>
-                <td class="editable-category" data-id="@item.Id" data-field="CategoryId" data-current="@item.CategoryId">
+                <td class="@(User.IsInRole("Admin") ? "editable-category" : "")" 
+                    data-id="@item.Id" data-field="CategoryId" data-current="@item.CategoryId">
                     @item.CategoryName
                 </td>
-                <td class="editable-expdate"
+
+                <td class="@(User.IsInRole("Admin") ? "editable-expdate" : "")"
                     data-id="@item.Id"
                     data-field="ExpirationDate"
                     data-current="@item.ExpirationDate.ToString("yyyy-MM-dd")">
                     @item.ExpirationDate.ToString("dd-MM-yyyy")
                 </td>
-                <td class="editable" data-id="@item.Id" data-field="quantity" data-type="number">
+
+                <td class="@(User.IsInRole("Admin") ? "editable" : "")" 
+                    data-id="@item.Id" data-field="quantity" data-type="number">
                     @item.quantity
                 </td>
-                <td>
-                    <button class="btn btn-outline-danger btn-sm delete-product"
-                          data-id="@item.Id"
-                          data-name="@item.ProductName">
-                          Delete
-                    </button>
-                </td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td>
+                            <button class="btn btn-outline-danger btn-sm delete-product"
+                                    data-id="@item.Id"
+                                    data-name="@item.ProductName">
+                                Delete
+                            </button>
+                        </td>
+                    }
             </tr>
     }
         </tbody>

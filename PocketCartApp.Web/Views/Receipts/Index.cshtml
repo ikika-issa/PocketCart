@@ -1,48 +1,50 @@
 ﻿@model IEnumerable<PocketCartApp.Domain.Domain_Models.Receipt>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Receipts";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Receipts</h2>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ShoppingCart)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.total)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.currency)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ShoppingCart!.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.total)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.currency)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="products-card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ShoppingCart.Cashier.UserName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.total)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.currency)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShoppingCart!.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.total)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.currency)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>

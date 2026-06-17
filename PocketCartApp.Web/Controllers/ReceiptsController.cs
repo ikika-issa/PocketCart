@@ -23,14 +23,14 @@ namespace PocketCartApp.Web.Controllers
             _receiptService = receiptService;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult IndexAllReceipts()
         {
             return View(_receiptService.GetAll());
         }
 
         [Authorize(Roles = "Cashier")]
-        public IActionResult IndexUserReceipts()
+        public IActionResult Index()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

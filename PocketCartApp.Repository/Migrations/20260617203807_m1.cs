@@ -280,6 +280,7 @@ namespace PocketCartApp.Repository.Migrations
                     userId = table.Column<string>(type: "TEXT", nullable: false),
                     PocketCartApplicationUserId = table.Column<string>(type: "TEXT", nullable: true),
                     total = table.Column<double>(type: "REAL", nullable: false),
+                    PaidAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     currency = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>

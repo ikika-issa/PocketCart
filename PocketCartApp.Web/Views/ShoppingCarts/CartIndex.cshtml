@@ -3,65 +3,121 @@
 
 <h2>Cart</h2>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var item in Model.Products)
-        {
+<div class="products-card mb-4">
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                <td>@item.Product?.ProductName</td>
-                <td>@item.Product?.ProductPrice</td>
-                <td>@item.quantity</td>
-                <td>
-                    @(item.quantity * (item.Product?.ProductPrice ?? 0))
-                </td>
+                <th>Barcode</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
 
-<div>
-    <button type="button"
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#barcodeModal">
-        Enter Barcode
-    </button>
+        <tbody>
+            @foreach (var item in Model.Products)
+            {
+                <tr>
+                    <td>@item.Product?.Barcode</td>
+                    <td>@item.Product?.ProductName</td>
+                    <td>@item.Product?.ProductPrice</td>
+                    <td>@item.quantity</td>
+                    <td>
+                        @(item.quantity * (item.Product?.ProductPrice ?? 0))
+                    </td>
+                </tr>
+            }
+            <tr class="empty-barcode-row">
+                <td class="barcode-input-cell">
+                    
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    @* <div>
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#barcodeModal">
+            Enter Barcode
+        </button>
+    </div> *@
+</div>
+
+<div class="row">
+    <div class="col-lg-7 mb-4">
+        <div class="card bg-glass text-white shadow-lg overflow-hidden border-0 rounded-4">
+            <div class="card-header bg-dark-gradient border-0 d-flex align-items-center justify-content-between p-3">
+                <h5 class="m-0 fw-bold d-flex align-items-center">
+                    <span class="status-indicator me-2 status-disconnected" id="statusDot"></span>
+                    ESP32-CAM Stream
+                </h5>
+                <span class="badge bg-secondary rounded-pill px-3 py-2" id="statusText">Disconnected</span>
+            </div>
+
+            <div class="card-body bg-dark text-center position-relative p-0 d-flex justify-content-center align-items-center" style="min-height: 360px;">
+                <!-- MJPEG Stream Container -->
+                <div class="stream-wrapper position-relative" id="streamWrapper">
+                    <img id="mjpeg-stream" src="" crossorigin="anonymous" class="img-fluid d-none" alt="ESP32-CAM Feed" style="max-height: 480px; width: auto;" />
+                    <div class="scan-laser" id="scanLaser"></div>
+                </div>
+
+                <!-- Placeholder when disconnected -->
+                <div class="placeholder-feed text-center text-muted" id="placeholderFeed">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-camera-video-off-fill mb-3" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l6.69 9.365zm-10.114-9A2.001 2.001 0 0 0 0 5v6a2 2 0 0 0 2 2h5.728L.847 3.366zm9.746 9.025L1.452 2.355 2.158 1.65l9.141 9.035-.712.705z" />
+                    </svg>
+                    <p class="fs-5">Feed is inactive. Configure IP and Connect.</p>
+                </div>
+            </div>
+
+            <div class="card-footer bg-glass-dark border-0 p-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-0 text-white">ESP32 IP / Stream URL</span>
+                    <input type="text" class="form-control bg-dark border-0 text-white" id="camUrl" placeholder="e.g. 192.168.1.100 or http://192.168.1.100/stream" />
+                    <button class="btn btn-primary px-4" id="btnConnect">Connect</button>
+                </div>
+                <small class="text-muted mt-2 d-block">Make sure your ESP32-CAM is powered and on the same Wi-Fi network.</small>
+            </div>
+        </div>
+     </div>
+
+    <div class="col-lg-5 mb-4">
+        <h3>
+            Total:
+            @Model.Products.Sum(x => x.quantity * (x.Product?.ProductPrice ?? 0))
+        </h3>
+
+        <div class="mt-3">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger mt-2">
+                    @TempData["Error"]
+                </div>
+            }
+            <a asp-action="Checkout" class="btn btn-success">
+                Checkout
+            </a>
+
+            <button type="button"
+                    class="btn btn-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#clearCartModal">
+                Clear Cart
+            </button>
+        </div>
+    </div>
 </div>
 
 <hr />
 
-<h3>
-    Total:
-    @Model.Products.Sum(x => x.quantity * (x.Product?.ProductPrice ?? 0))
-</h3>
 
-<div class="mt-3">
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger mt-2">
-            @TempData["Error"]
-        </div>
-    }
-    <a asp-action="Checkout" class="btn btn-success">
-        Checkout 
-    </a>
-
-    <button type="button"
-            class="btn btn-danger"
-            data-bs-toggle="modal"
-            data-bs-target="#clearCartModal">
-        Clear Cart
-    </button>
-</div>
 
 <div class="modal fade" id="barcodeModal" tabindex="-1">
     <div class="modal-dialog">
@@ -139,3 +195,79 @@
         </div>
     </div>
 </div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            document.addEventListener("dblclick", function (e) {
+
+                const cell = e.target.closest(".barcode-input-cell");
+
+                if (!cell) return;
+
+                if (cell.querySelector("input")) return;
+
+                const oldText = cell.innerText.trim();
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.maxLength = 13;
+                input.placeholder = "Enter barcode";
+                input.className = "form-control form-control-sm";
+
+                cell.innerHTML = "";
+                cell.appendChild(input);
+                input.focus();
+
+                function save() {
+
+                    const barcode = input.value.trim();
+                    console.log("Barcode:", barcode);
+
+
+                    if (!/^\d{13}$/.test(barcode)) {
+                        cell.innerText = oldText;
+                        alert("Please enter a valid 13-digit barcode.");
+                        return;
+                    }
+
+                    fetch("/Products/AddByBarcode", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: `barcode=${encodeURIComponent(barcode)}`
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = "/ShoppingCarts/CartIndex";
+                        } else {
+                            cell.innerText = oldText;
+                            alert("Product not found.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        cell.innerText = oldText;
+                        alert("Error while adding product.");
+                    });
+                }
+
+                input.addEventListener("keydown", function (e) {
+
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        save();
+                    }
+
+                    if (e.key === "Escape") {
+                        cell.innerText = oldText;
+                    }
+                });
+
+            });
+        });
+    </script>
+}

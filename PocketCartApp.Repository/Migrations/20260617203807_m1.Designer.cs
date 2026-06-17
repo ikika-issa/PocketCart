@@ -11,7 +11,7 @@ using PocketCartApp.Repository;
 namespace PocketCartApp.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260617140904_m1")]
+    [Migration("20260617203807_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -276,6 +276,9 @@ namespace PocketCartApp.Repository.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("PaidAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PocketCartApplicationUserId")

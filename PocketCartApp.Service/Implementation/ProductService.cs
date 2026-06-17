@@ -66,7 +66,11 @@ namespace PocketCartApp.Service.Implementation
 
             if (shoppingCart == null)
             {
-                throw new Exception("Shopping cart not found.");
+                shoppingCart = new ShoppingCart
+                {
+                    Id = Guid.NewGuid(),
+                    CashierOnShift = cashierId
+                };
             }
 
             var product = GetByBarcode(barcode);
@@ -167,8 +171,13 @@ namespace PocketCartApp.Service.Implementation
 
         public Product? GetByBarcode(string barcode)
         {
-            return _productRepository.Get(selector: x => x,
-                                           predicate: x => x.Barcode!.Equals(barcode));
+            barcode = barcode.Trim();
+
+            return _productRepository.Get(
+                selector: x => x,
+                predicate: x => x.Barcode != null &&
+                                x.Barcode.Trim() == barcode
+    );
         }
     }
 }

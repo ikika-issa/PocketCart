@@ -10,6 +10,10 @@
 - Display names for all attributes in Manufacturer Domain Model
 - Display names for all attributes in ShoppingCart Domain Model
 - Double click edit in Categories Index page
+- Fixed dropdown menu when clicking the username in the top right corner
+- A new role "Manager"
+- Instead of a button to add a product via barcode, now they can double click the barcode column empty cell and enter the full
+barcode to add an item as well as add it via scanning
 
 
 ### FIXED
@@ -19,22 +23,31 @@
 - Removed the need to redirect to a page when deleting a product
 - Fixed the Views/Products/Index.cshtml to fit in more
 - Fixed script to enable double click edit in Products Index page
+- Adjusted the drop-down menu for logging out to be as wide as the username button
+- Only Admins can edit the employee list
+- Only Admins and Managers can see the employee list
+- Disable/Enable account buttons are hidden for everyone except Admin
+- An admin user cannot disable their own account
+- Admin can only double click to edit items in Products/Index.cshtml
+- Cart is now definitely associated with user
+- Checkout works now
+
 
 ### TO-DO
-- Remove the Edit dependency completely in CategoriesController
-- Add a 'Scan Item' button to Cart to scan the barcode of an item and add them like that
+- Remove the Edit dependency completely in CategoriesController [DONE]
+- Add a 'Scan Item' button to Cart to scan the barcode of an item and add them like that [DONE]
 - ShoppingCarts in layout will be replaced with Receipts controller for logged in cashier to see their printed 
 receipts or if an admin is there they will see all of them
 - Add another role (Manager) that doesn't have all priviledges such as adding items or deleting, but they will
-have details, view priviledges to keep count of what items are where
+have details, view priviledges to keep count of what items are where [DONE]
 - Add custom charts that the admin can choose to look at what they want (Only admin)
 - Add a table of products where the expiration date is in 2 week window (Admin and manager)
 - Add a table of what things are off or in a bundle (All roles)
-- Edit the Register.cshtml to look in theme
-- Edit the Views/Employees/Index.cshtml to look in theme
-- Edit the Login.cshtml to look in theme
-- When clicking on the name of the logged in user a drop down menu appears. Change it to fit into theme
-- Clean up Views/Categories/Index.cshtml in theme
+- Edit the Register.cshtml to look in theme [DONE]
+- Edit the Views/Employees/Index.cshtml to look in theme [DONE]
+- Edit the Login.cshtml to look in theme [DONE]
+- When clicking on the name of the logged in user a drop down menu appears. Change it to fit into theme [DONE]
+- Clean up Views/Categories/Index.cshtml in theme [DONE]
 
 ## 16-06-2026
 

@@ -2,6 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
+using PocketCartApp.Domain.Domain_Models;
+using PocketCartApp.Domain.Identity_Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,16 +21,6 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
-using PocketCartApp.Domain.Domain_Models;
-using PocketCartApp.Domain.Identity_Models;
 
 namespace PocketCartApp.Web.Areas.Identity.Pages.Account
 {
@@ -31,13 +32,16 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<PocketCartApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public List<SelectListItem> RolesList { get; set; } = new();
 
         public RegisterModel(
             UserManager<PocketCartApplicationUser> userManager,
             IUserStore<PocketCartApplicationUser> userStore,
             SignInManager<PocketCartApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -45,6 +49,7 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -98,13 +103,16 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
             public Account_Status Account_Status { get; set; }
             public ShoppingCart ShoppingCart { get; set; }
 
+            [Required]
+            public string Role { get; set; }
+
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "The {0} must be between {2} and {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
@@ -123,6 +131,14 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
+
+            RolesList = new List<SelectListItem>
+{
+                new SelectListItem { Value = Roles.Admin, Text = Roles.Admin },
+                new SelectListItem { Value = Roles.Manager, Text = Roles.Manager },
+                new SelectListItem { Value = Roles.Cashier, Text = Roles.Cashier }
+            };
+
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
@@ -154,6 +170,13 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
+                RolesList = new List<SelectListItem>
+{
+                    new SelectListItem { Value = Roles.Admin, Text = Roles.Admin },
+                    new SelectListItem { Value = Roles.Manager, Text = Roles.Manager },
+                    new SelectListItem { Value = Roles.Cashier, Text = Roles.Cashier }
+                };
+
                 var user = CreateUser();
 
                 user.FirstName = Input.FirstName;
@@ -264,6 +287,13 @@ namespace PocketCartApp.Web.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
+
+            RolesList = new List<SelectListItem>
+{
+                new SelectListItem { Value = Roles.Admin, Text = Roles.Admin },
+                new SelectListItem { Value = Roles.Manager, Text = Roles.Manager },
+                new SelectListItem { Value = Roles.Cashier, Text = Roles.Cashier }
+            };
 
             // If we got this far, something failed, redisplay form
             return Page();
