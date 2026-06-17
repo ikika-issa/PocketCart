@@ -5,202 +5,336 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Products</h2>
+        <p class="text-muted mb-0">
+            Manage inventory, prices and expiration dates
+        </p>
+    </div>
+</div>
 
 <p>
-    <a asp-action="Create" class="btn btn-outline-primary mb-2">Create product</a>
-    <button id="toggleFilters" class="btn btn-primary mb-2">
+    <a asp-action="Create" class="btn btn-outline-primary mb-2"> Create </a>
+    <button id="toggleFilters" class="btn btn-outline-success mb-2">
         Toggle Filters
     </button>
 </p>
-<table class="table" id="productsTable">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.BarcodeImagePath)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Barcode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.quantity)
-            </th>
-            <th></th>
-        </tr>
-        <tr class="filters" style="display:none;">
-            <th></th>
-            <th><input type="text" class="form-control form-control-sm" placeholder="Search Barcode" /></th>
-            <th><input type="text" class="form-control form-control-sm" placeholder="Search Name" /></th>
-            <th><input type="text" class="form-control form-control-sm" placeholder="Search Price" /></th>
-            <th><input type="text" class="form-control form-control-sm" placeholder="Search Category" /></th>
-            <th><input type="text" class="form-control form-control-sm" placeholder="Search Quantity" /></th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
+<div class="products-card">
+    <table class="table align-middle mb-0" id="productsTable">
+        <thead>
             <tr>
-             <td>
-                 @if (!string.IsNullOrEmpty(item.BarcodeImagePath))
-                 {
-                     <img src="@item.BarcodeImagePath"
-                     alt="@item.Barcode;
-                    style="width:180px; height:auto;" />
-                 }
-                 else
-                 {
-                     <span>No barcode</span>
-                 }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Barcode)
-            </td>
-             <td class="editable" data-id="@item.Id" data-field="ProductName" data-type="text">
-                @item.ProductName
-            </td>
-            <td class="editable" data-id="@item.Id" data-field="ProductPrice" data-type="number">
-                @item.ProductPrice
-            </td>
-            <td class="editable-category" data-id="@item.Id" data-field="CategoryId" data-current="@item.CategoryId">
-                @item.CategoryName
-            </td>
-            <td class="editable" data-id="@item.Id" data-field="quantity" data-type="number">
-                @item.quantity
-            </td>
-            <td>
-                <a asp-action="Delete" asp-route-id="@item.Id">Remove product</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+                <th>
+                    @Html.DisplayNameFor(model => model.BarcodeImagePath)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Barcode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductPrice)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Manufacturer)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CategoryName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(Model => Model.ExpirationDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.quantity)
+                </th>
+                <th></th>
+            </tr>
+            <tr class="filters" style="display:none;">
+                <th></th>
+                <th><input type="text" class="form-control form-control-sm" placeholder="Search Barcode" /></th>
+                <th><input type="text" class="form-control form-control-sm" placeholder="Search Name" /></th>
+                <th><input type="text" class="form-control form-control-sm" placeholder="Search Price" /></th>
+                <th><input type="text" class="form-control form-control-sm" placeholder="Search Manufacturer" /></th>
+                <th><input type="text" class="form-control form-control-sm" placeholder="Search Category" /></th>
+                <th><input type="text" class="form-control form-control-sm" placeholder="Search Expiration Date" /></th>
+                <th><input type="text" class="form-control form-control-sm" placeholder="Search Quantity" /></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+                <tr>
+                 <td>
+                     @if (!string.IsNullOrEmpty(item.BarcodeImagePath))
+                     {
+                         <img src="@item.BarcodeImagePath"
+                            alt="@item.Barcode;
+                            style="width:180px; height:auto;" />
+                     }
+                     else
+                     {
+                         <span>No barcode</span>
+                     }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Barcode)
+                </td>
+                 <td class="editable" data-id="@item.Id" data-field="ProductName" data-type="text">
+                    @item.ProductName
+                </td>
+                <td class="editable"
+                     data-id="@item.Id"
+                     data-field="ProductPrice"
+                     data-type="number"
+                     data-value="@item.ProductPrice">
+                     @item.ProductPrice MKD
+                </td>
+                <td class="editable-manufacturer"
+                     data-id="@item.Id"
+                     data-field="ManufacturerId"
+                     data-current="@item.ManufacturerId">
+                    @(item.Manufacturer != null ? item.Manufacturer.ManufacturerName : "No manufacturer")
+                </td>
+                <td class="editable-category" data-id="@item.Id" data-field="CategoryId" data-current="@item.CategoryId">
+                    @item.CategoryName
+                </td>
+                <td class="editable-expdate"
+                    data-id="@item.Id"
+                    data-field="ExpirationDate"
+                    data-current="@item.ExpirationDate.ToString("yyyy-MM-dd")">
+                    @item.ExpirationDate.ToString("dd-MM-yyyy")
+                </td>
+                <td class="editable" data-id="@item.Id" data-field="quantity" data-type="number">
+                    @item.quantity
+                </td>
+                <td>
+                    <button class="btn btn-outline-danger btn-sm delete-product"
+                          data-id="@item.Id"
+                          data-name="@item.ProductName">
+                          Delete
+                    </button>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>
 
 @section Scripts {
     <script>
-        document.querySelectorAll(".editable").forEach(cell => {
-            cell.addEventListener("dblclick", function () {
-                if (cell.querySelector("input")) return;
+         document.querySelectorAll(".delete-product").forEach(button => {
+            button.addEventListener("click", function () {
 
-                const oldValue = cell.innerText.trim();
-                const productId = cell.dataset.id;
-                const field = cell.dataset.field;
-                const type = cell.dataset.type || "text";
+                const id = this.dataset.id;
+                const name = this.dataset.name;
 
-                const input = document.createElement("input");
-                input.type = type;
-                input.value = oldValue;
-                input.className = "form-control form-control-sm";
+                if (!confirm(`Are you sure you want to delete "${name}"?`))
+                    return;
 
-                if (type === "number") {
-                    input.step = "0.01";
-                    input.min = "0";
-                }
-
-                cell.innerHTML = "";
-                cell.appendChild(input);
-                input.focus();
-
-                function save() {
-                    const newValue = input.value;
-
-                    fetch(`/Products/UpdateInline?id=${productId}&field=${field}&value=${encodeURIComponent(newValue)}`, {
-                        method: "POST"
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            cell.innerText = newValue;
-                        } else {
-                            cell.innerText = oldValue;
-                            alert("Update failed.");
-                        }
-                    })
-                    .catch(() => {
-                        cell.innerText = oldValue;
-                        alert("Error while updating.");
-                    });
-                }
-
-                input.addEventListener("blur", save);
-
-                input.addEventListener("keydown", function (e) {
-                    if (e.key === "Enter") input.blur();
-                    if (e.key === "Escape") cell.innerText = oldValue;
+                fetch(`/Products/DeleteConfirmed/${id}`, {
+                    method: "POST"
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                    else {
+                        alert("Delete failed.");
+                    }
+                })
+                .catch(() => {
+                    alert("Delete failed.");
                 });
             });
+        });
+
+
+        function createSelectEditor(cell, items, errorMessage) {
+            if (cell.querySelector("select")) return;
+
+            const oldText = cell.innerText.trim();
+            const productId = cell.dataset.id;
+            const field = cell.dataset.field;
+            const currentValue = cell.dataset.current;
+
+            const select = document.createElement("select");
+            select.className = "form-control form-control-sm";
+
+            items.forEach(item => {
+                const option = document.createElement("option");
+                option.value = item.value;
+                option.textContent = item.text;
+
+                if (item.value === currentValue) {
+                    option.selected = true;
+                }
+
+                select.appendChild(option);
+            });
+
+            cell.innerHTML = "";
+            cell.appendChild(select);
+            select.focus();
+
+            function save() {
+                const newValue = select.value;
+                const newText = select.options[select.selectedIndex].text;
+
+                fetch(`/Products/UpdateInline?id=${productId}&field=${field}&value=${encodeURIComponent(newValue)}`, {
+                    method: "POST"
+                })
+                .then(response => {
+                    if (response.ok) {
+                        cell.innerText = newText;
+                        cell.dataset.current = newValue;
+                    } else {
+                        cell.innerText = oldText;
+                        alert(errorMessage);
+                    }
+                })
+                .catch(() => {
+                    cell.innerText = oldText;
+                    alert(errorMessage);
+                });
+            }
+
+            select.addEventListener("change", save);
+            select.addEventListener("blur", save);
+        }
+
+        function createInputEditor(cell) {
+            if (cell.querySelector("input")) return;
+
+            const oldValue = cell.dataset.value ?? cell.innerText.trim();
+            const productId = cell.dataset.id;
+            const field = cell.dataset.field;
+            const type = cell.dataset.type || "text";
+
+            const input = document.createElement("input");
+            input.type = type;
+            input.value = oldValue;
+            input.className = "form-control form-control-sm";
+
+            if (type === "number") {
+                input.step = "0.01";
+                input.min = "0";
+            }
+
+            cell.innerHTML = "";
+            cell.appendChild(input);
+            input.focus();
+
+            function save() {
+                const newValue = input.value;
+
+                fetch(`/Products/UpdateInline?id=${productId}&field=${field}&value=${encodeURIComponent(newValue)}`, {
+                    method: "POST"
+                })
+                .then(response => {
+                     if (response.ok) {
+                        if (field === "ProductPrice") {
+                            cell.innerText = newValue + " MKD";
+                            cell.dataset.value = newValue;
+                        } else {
+                            cell.innerText = newValue;
+                        }
+                    }
+                })
+                .catch(() => {
+                    cell.innerText = oldValue;
+                    alert("Update failed.");
+                });
+            }
+
+            input.addEventListener("blur", save);
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") input.blur();
+                if (e.key === "Escape") cell.innerText = oldValue;
+            });
+        }
+
+        function createDateEditor(cell) {
+            if (cell.querySelector("input")) return;
+
+            const oldText = cell.innerText.trim();
+            const productId = cell.dataset.id;
+            const field = cell.dataset.field;
+            const currentValue = cell.dataset.current;
+
+            const input = document.createElement("input");
+            input.type = "date";
+            input.value = currentValue;
+            input.className = "form-control form-control-sm";
+
+            cell.innerHTML = "";
+            cell.appendChild(input);
+            input.focus();
+
+            function save() {
+                const newValue = input.value;
+
+                fetch(`/Products/UpdateInline?id=${productId}&field=${field}&value=${encodeURIComponent(newValue)}`, {
+                    method: "POST"
+                })
+                .then(response => {
+                    if (response.ok) {
+                        const parts = newValue.split("-");
+                        cell.innerText = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        cell.dataset.current = newValue;
+                    } else {
+                        cell.innerText = oldText;
+                        alert("Expiration date update failed.");
+                    }
+                })
+                .catch(() => {
+                    cell.innerText = oldText;
+                    alert("Expiration date update failed.");
+                });
+            }
+
+            input.addEventListener("blur", save);
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") input.blur();
+                if (e.key === "Escape") cell.innerText = oldText;
+            });
+        }
+
+        const categories = [
+            @foreach (var category in ViewBag.Categories)
+            {
+                    <text>{ value: "@category.Value", text: "@category.Text" },</text>
+            }
+        ];
+
+        const manufacturers = [
+            @foreach (var manufacturer in ViewBag.Manufacturers)
+            {
+                    <text>{ value: "@manufacturer.Value", text: "@manufacturer.Text" },</text>
+            }
+        ];
+
+        document.querySelectorAll(".editable").forEach(cell => {
+            cell.addEventListener("dblclick", () => createInputEditor(cell));
         });
 
         document.querySelectorAll(".editable-category").forEach(cell => {
-            cell.addEventListener("dblclick", function () {
-                if (cell.querySelector("select")) return;
-
-                const oldText = cell.innerText.trim();
-                const productId = cell.dataset.id;
-                const field = cell.dataset.field;
-                const currentValue = cell.dataset.current;
-
-                const select = document.createElement("select");
-                select.className = "form-control form-control-sm";
-
-                const categories = [
-                    @foreach (var category in ViewBag.Categories)
-                    {
-                            <text>{ value: "@category.Value", text: "@category.Text" },</text>
-                    }
-                ];
-
-                categories.forEach(category => {
-                    const option = document.createElement("option");
-                    option.value = category.value;
-                    option.textContent = category.text;
-
-                    if (category.value === currentValue) {
-                        option.selected = true;
-                    }
-
-                    select.appendChild(option);
-                });
-
-                cell.innerHTML = "";
-                cell.appendChild(select);
-                select.focus();
-
-                function save() {
-                    const newValue = select.value;
-                    const newText = select.options[select.selectedIndex].text;
-
-                    fetch(`/Products/UpdateInline?id=${productId}&field=${field}&value=${newValue}`, {
-                        method: "POST"
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            cell.innerText = newText;
-                            cell.dataset.current = newValue;
-                        } else {
-                            cell.innerText = oldText;
-                            alert("Category update failed.");
-                        }
-                    })
-                    .catch(() => {
-                        cell.innerText = oldText;
-                        alert("Error while updating category.");
-                    });
-                }
-
-                select.addEventListener("blur", save);
-                select.addEventListener("change", save);
+            cell.addEventListener("dblclick", () => {
+                createSelectEditor(cell, categories, "Category update failed.");
             });
         });
+
+        document.querySelectorAll(".editable-manufacturer").forEach(cell => {
+            cell.addEventListener("dblclick", () => {
+                createSelectEditor(cell, manufacturers, "Manufacturer update failed.");
+            });
+        });
+
+        document.querySelectorAll(".editable-expdate").forEach(cell => {
+            cell.addEventListener("dblclick", () => createDateEditor(cell));
+        });
     </script>
-    
+
     <script>
         $(document).ready(function () {
             const table = $('#productsTable').DataTable({
@@ -216,10 +350,7 @@
 
                 if (input.length) {
                     input.on('keyup change clear', function () {
-                        table
-                            .column(index)
-                            .search(this.value)
-                            .draw();
+                        table.column(index).search(this.value).draw();
                     });
                 }
             });

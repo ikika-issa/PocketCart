@@ -265,3 +265,94 @@ html[data-theme="light"] .navbar {
 html[data-theme="light"] .navbar-brand:hover {
   text-shadow: 0 0 12px rgba(18, 184, 134, 0.4) !important;
 }
+
+.products-card {
+    background: white;
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    overflow-x: auto;
+}
+
+#productsTable {
+    width: 100%!important;
+    table-layout: fixed;
+}
+
+
+    #productsTable th,
+    #productsTable td {
+        vertical-align: middle;
+        white-space: normal;
+    }
+
+        #productsTable th:nth-child(1),
+        #productsTable td:nth-child(1) {
+            width: 260px;
+        }
+
+        #productsTable th:nth-child(2),
+        #productsTable td:nth-child(2) {
+            width: 150px;
+        }
+
+        #productsTable th:nth-child(4),
+        #productsTable th:nth-child(4) {
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        #productsTable th:nth-child(6),
+        #productsTable td:nth-child(6) {
+            width: 130px;
+        }
+
+        #productsTable th:nth-child(7),
+        #productsTable td:nth-child(7) {
+            width: 180px;
+            white-space: nowrap;
+        }
+
+        #productsTable th:nth-child(8),
+        #productsTable td:nth-child(8) {
+            width: 100px;
+        }
+
+        #productsTable th:nth-child(9),
+        #productsTable td:nth-child(9) {
+            width: 120px;
+        }
+
+    #productsTable thead th {
+        border-bottom: none;
+        font-weight: 600;
+        color: #2c3e50;
+        padding: 18px;
+    }
+
+    #productsTable tbody tr {
+        transition: all 0.2s ease;
+    }
+
+        #productsTable tbody tr:hover {
+            background-color: #f8fffc;
+        }
+
+    #productsTable td {
+        padding: 18px;
+        vertical-align: middle;
+    }
+
+    #productsTable img {
+        border-radius: 12px;
+    }
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    border-radius: 12px;
+}
+
+.filters input {
+    border-radius: 12px;
+}

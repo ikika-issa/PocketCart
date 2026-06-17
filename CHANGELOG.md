@@ -1,5 +1,41 @@
 # CHANGELOG
 
+
+## 17-06-2026
+
+### ADDED
+- Display names for all attributes in Product Domain Model
+- Display names for all attributes in Category Domain Model
+- Display names for all attributes in Receipt Domain Model
+- Display names for all attributes in Manufacturer Domain Model
+- Display names for all attributes in ShoppingCart Domain Model
+- Double click edit in Categories Index page
+
+
+### FIXED
+- Products/Index.cshtml to view Manufacturer and Expiration Date of products
+- Removed ShoppingCarts button on layout page as it is useless
+- Added "MKD" after the price in Products Index
+- Removed the need to redirect to a page when deleting a product
+- Fixed the Views/Products/Index.cshtml to fit in more
+- Fixed script to enable double click edit in Products Index page
+
+### TO-DO
+- Remove the Edit dependency completely in CategoriesController
+- Add a 'Scan Item' button to Cart to scan the barcode of an item and add them like that
+- ShoppingCarts in layout will be replaced with Receipts controller for logged in cashier to see their printed 
+receipts or if an admin is there they will see all of them
+- Add another role (Manager) that doesn't have all priviledges such as adding items or deleting, but they will
+have details, view priviledges to keep count of what items are where
+- Add custom charts that the admin can choose to look at what they want (Only admin)
+- Add a table of products where the expiration date is in 2 week window (Admin and manager)
+- Add a table of what things are off or in a bundle (All roles)
+- Edit the Register.cshtml to look in theme
+- Edit the Views/Employees/Index.cshtml to look in theme
+- Edit the Login.cshtml to look in theme
+- When clicking on the name of the logged in user a drop down menu appears. Change it to fit into theme
+- Clean up Views/Categories/Index.cshtml in theme
+
 ## 16-06-2026
 
 ### ADDED

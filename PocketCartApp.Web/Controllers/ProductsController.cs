@@ -47,24 +47,17 @@ namespace PocketCartApp.Web.Controllers
                 })
                 .ToList();
 
+            ViewBag.Manufacturers = _manufacturerService.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.ManufacturerName
+                })
+                .ToList();
+
             return View(_productService.GetAll());
         }
 
-        
-        public IActionResult Details(Guid id)
-        {
-
-            var product = _productService.GetById(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
-        }
-
-        // GET: Products/Create
         public IActionResult Create()
         {
             ViewBag.Categories = _categoryService.GetAll()
@@ -119,32 +112,13 @@ namespace PocketCartApp.Web.Controllers
             return View(product);
         }
 
-        // GET: Products/Delete/5
-        public IActionResult Delete(Guid id)
-        {
-            var product = _productService.GetById(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
-        }
-
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var product = _productService.GetById(id);
-
-            if (product != null)
-            {
-                _productService.DeleteById(id);
-            }
-
-            return RedirectToAction(nameof(Index));
+            _productService.DeleteById(id);
+            return Ok();
         }
 
         private bool ProductExists(Guid id)
@@ -204,7 +178,13 @@ namespace PocketCartApp.Web.Controllers
                     break;
 
                 case "ProductPrice":
-                    product.ProductPrice = double.Parse(value);
+                    if (string.IsNullOrWhiteSpace(value))
+                        return BadRequest("Price is empty");
+
+                    if (!double.TryParse(value, out double price))
+                        return BadRequest("Invalid price");
+
+                    product.ProductPrice = price;
                     break;
 
                 case "quantity":
@@ -216,6 +196,24 @@ namespace PocketCartApp.Web.Controllers
 
                     var category = _categoryService.GetById(product.CategoryId);
                     product.CategoryName = category?.CategoryName;
+                    break;
+
+                case "ManufacturerId":
+                    product.ManufacturerId = Guid.Parse(value);
+
+                    var manufacturer = _manufacturerService.GetById(product.ManufacturerId);
+
+                    if (manufacturer == null)
+                        return BadRequest();
+
+                    product.Manufacturer = manufacturer;
+                    break;
+
+                case "ExpirationDate":
+                    if (!DateOnly.TryParse(value, out DateOnly expirationDate))
+                        return BadRequest();
+
+                    product.ExpirationDate = expirationDate;
                     break;
 
                 default:
