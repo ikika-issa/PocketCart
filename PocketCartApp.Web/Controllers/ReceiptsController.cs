@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
@@ -23,30 +24,39 @@ namespace PocketCartApp.Web.Controllers
             _receiptService = receiptService;
         }
 
-        [Authorize(Roles = "Admin,Manager")]
-        public IActionResult IndexAllReceipts()
-        {
-            return View(_receiptService.GetAll());
-        }
-
-        [Authorize(Roles = "Cashier")]
         public IActionResult Index()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return View(_receiptService.GetAll());
+            if (User.IsInRole("Cashier"))
+            {
+                return View(_receiptService.GetAllByUserId(userId!));
+            }
+            else
+            {
+                return View(_receiptService.GetAll());
+            }   
         }
 
-        public IActionResult Details(Guid id)
+        public IActionResult ExportCsv()
         {
-            var receipt = _receiptService.GetById(id);
+            var receipts = _receiptService.GetAll();
 
-            if (receipt == null)
+            var csv = new StringBuilder();
+
+            csv.AppendLine("Cashier,Date,Total,Currency");
+
+            foreach (var r in receipts)
             {
-                return NotFound();
+                csv.AppendLine($"{r.PocketCartApplicationUser?.UserName}," +
+                    $"{r.PaidAt:dd-MM-yyyy HH:mm},{r.total},{r.currency}");
             }
 
-            return View(receipt);
+            return File(
+                Encoding.UTF8.GetBytes(csv.ToString()),
+                "text/csv",
+                "Receipts.csv"
+            );
         }
     }
 }

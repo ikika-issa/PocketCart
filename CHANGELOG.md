@@ -3,16 +3,33 @@
 
 ## 18-06-2026
 
+### ADDED
+- "MKD" next to Total in cart
+- Receipts are now printed
+- Added ProductExportDTO to transfer information for a export in excel
+- Added an ExportProducts function in ProductService
+- Added a function in ProductsController to export the index table to a csv file
+- added a popup of the pdf of the receipt when checkout is clicked
+
+### FIXED
+- User cannot clear an empty cart
+- User cannot generate an empty receipt
+- Removed Details from CategoriesController and views
+- Only admin can edit/delete categories
+- only admin can edit/delete manufaturers
+- Receipts button works, admin and manager can see all, cashier only their own
+
 ### TO-DO
 - Add custom charts that the admin can choose to look at what they want (Only admin)
 - Add a table of products where the expiration date is in 2 week window (Admin and manager)
 - Add a table of what things are off or in a bundle (All roles)
-- Add a End Date text area in Register if the contract is fixed
-- Add start date, contract type and end date in Employees list
+- Add a End Date text area in Register if the contract is fixed [DONE]
+- Add start date, contract type and end date in Employees list [DONE]
 - Test adding product to cart [DONE]
 - Test printing receipt [DONE]
 - Add a remove product from cart option in case of a misinput/make the quantity editable and if user puts 0 it delets
-the item from the cart
+the item from the cart [DONE]
+- After clicking checkout, a popup with a pic of the receipt appears on screen [DONE]
 
 ## 17-06-2026
 

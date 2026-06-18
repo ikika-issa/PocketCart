@@ -16,13 +16,13 @@
         </thead>
 
         <tbody>
-            @foreach (var item in Model.Products)
+            @foreach (var item in Model.ProductsInCart)
             {
                 <tr>
                     <td>@item.Product?.Barcode</td>
                     <td>@item.Product?.ProductName</td>
                     <td>@item.Product?.ProductPrice</td>
-                    <td>@item.quantity</td>
+                    <td class="editable-cart-quantity" data-product-id="@item.Product!.Id">@item.quantity</td>
                     <td>
                         @(item.quantity * (item.Product?.ProductPrice ?? 0))
                     </td>
@@ -39,15 +39,6 @@
             </tr>
         </tbody>
     </table>
-
-    @* <div>
-        <button type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#barcodeModal">
-            Enter Barcode
-        </button>
-    </div> *@
 </div>
 
 <div class="row">
@@ -76,22 +67,14 @@
                     <p class="fs-5">Feed is inactive. Configure IP and Connect.</p>
                 </div>
             </div>
-
-            <div class="card-footer bg-glass-dark border-0 p-3">
-                <div class="input-group">
-                    <span class="input-group-text bg-dark border-0 text-white">ESP32 IP / Stream URL</span>
-                    <input type="text" class="form-control bg-dark border-0 text-white" id="camUrl" placeholder="e.g. 192.168.1.100 or http://192.168.1.100/stream" />
-                    <button class="btn btn-primary px-4" id="btnConnect">Connect</button>
-                </div>
-                <small class="text-muted mt-2 d-block">Make sure your ESP32-CAM is powered and on the same Wi-Fi network.</small>
-            </div>
         </div>
      </div>
 
     <div class="col-lg-5 mb-4">
         <h3>
             Total:
-            @Model.Products.Sum(x => x.quantity * (x.Product?.ProductPrice ?? 0))
+            @Model.ProductsInCart.Sum(x => x.quantity * (x.Product?.ProductPrice ?? 0))
+            MKD
         </h3>
 
         <div class="mt-3">
@@ -101,14 +84,15 @@
                     @TempData["Error"]
                 </div>
             }
-            <a asp-action="Checkout" class="btn btn-success">
+            <a asp-action="Checkout" class="btn btn-success" disabled="@(!Model.ProductsInCart.Any())">
                 Checkout
             </a>
 
             <button type="button"
                     class="btn btn-danger"
                     data-bs-toggle="modal"
-                    data-bs-target="#clearCartModal">
+                    data-bs-target="#clearCartModal"
+                    disabled="@(!Model.ProductsInCart.Any())">
                 Clear Cart
             </button>
         </div>
@@ -180,7 +164,6 @@
                            name="cashierCode"
                            class="form-control"
                            required />
-
                 </div>
 
                 <div class="modal-footer">
@@ -189,15 +172,74 @@
                         Clear Cart
                     </button>
                 </div>
-
             </form>
-
         </div>
     </div>
 </div>
 
+@if (Context.Request.Query.ContainsKey("receiptId"))
+{
+    var receiptId = Context.Request.Query["receiptId"].ToString();
+    var pdfPath = $"/receipts/Receipt-{receiptId}.pdf";
+
+    <div class="modal fade" id="receiptPrintedModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content rounded-4">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Receipt printed</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="mb-3">Receipt was successfully created and printed.</p>
+
+                    <iframe src="@pdfPath"
+                            width="100%"
+                            height="600"
+                            style="border:none;">
+                    </iframe>
+                </div>
+
+                <div class="modal-footer">
+                    <a href="@pdfPath"
+                       target="_blank"
+                       class="btn btn-success">
+                        Open PDF
+                    </a>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 
 @section Scripts {
+    @* TO PRINT RECEIPTS *@
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modalElement = document.getElementById("receiptPrintedModal");
+
+            if (modalElement) {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            }
+        });
+    </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
@@ -267,6 +309,64 @@
                     }
                 });
 
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("dblclick", function (e) {
+            const cell = e.target.closest(".editable-cart-quantity");
+
+            if (!cell) return;
+            if (cell.querySelector("input")) return;
+
+            const oldValue = cell.innerText.trim();
+            const productId = cell.dataset.productId;
+
+            const input = document.createElement("input");
+            input.type = "number";
+            input.min = "0";
+            input.step = "1";
+            input.value = oldValue;
+            input.className = "form-control form-control-sm";
+
+            cell.innerHTML = "";
+            cell.appendChild(input);
+            input.focus();
+
+            function save() {
+                const newQuantity = input.value;
+
+                fetch("/ShoppingCarts/UpdateCartQuantity", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `productId=${encodeURIComponent(productId)}&quantity=${encodeURIComponent(newQuantity)}`
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        cell.innerText = oldValue;
+                        alert("Quantity update failed.");
+                    }
+                })
+                .catch(() => {
+                    cell.innerText = oldValue;
+                    alert("Error while updating quantity.");
+                });
+            }
+
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    save();
+                }
+
+                if (e.key === "Escape") {
+                    cell.innerText = oldValue;
+                }
             });
         });
     </script>

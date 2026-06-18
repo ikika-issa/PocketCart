@@ -70,6 +70,14 @@
                 <span asp-validation-for="Input.duration" class="text-danger"></span>
             </div>
 
+            <div class="form-group mt-3" id="endDateField" style="display:none;">
+                <label class="form-label">End Date</label>
+                <input type="text"
+                       id="calculatedEndDate"
+                       class="form-control"
+                       readonly />
+            </div>
+
             <div class="form-group mb-4">
                 <label asp-for="Input.Account_Status" class="form-label">
                     Account Status
@@ -145,33 +153,52 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            const contractType =
-                document.getElementById("Input_Contract_Type");
+            const contractType = document.getElementById("Input_Contract_Type");
+            const durationInput = document.getElementById("Input_duration");
+            const startDateInput = document.getElementById("Input_StartDate");
 
-            const durationField =
-                document.getElementById("durationField");
+            const durationField = document.getElementById("durationField");
+            const endDateField = document.getElementById("endDateField");
+            const calculatedEndDate = document.getElementById("calculatedEndDate");
 
-            function toggleDurationField() {
+            function updateFields() {
 
                 const selectedText =
-                    contractType.options[
-                        contractType.selectedIndex
-                    ].text;
+                    contractType.options[contractType.selectedIndex].text;
 
                 if (selectedText === "Fixed") {
+
                     durationField.style.display = "block";
+                    endDateField.style.display = "block";
+
+                    const startDate = startDateInput.value;
+                    const duration = parseInt(durationInput.value);
+
+                    if (startDate && !isNaN(duration)) {
+
+                        const date = new Date(startDate);
+
+                        date.setMonth(date.getMonth() + duration);
+
+                        calculatedEndDate.value =
+                            date.toLocaleDateString("en-GB");
+                    }
+                    else {
+                        calculatedEndDate.value = "";
+                    }
                 }
                 else {
                     durationField.style.display = "none";
+                    endDateField.style.display = "none";
+                    calculatedEndDate.value = "";
                 }
             }
 
-            contractType.addEventListener(
-                "change",
-                toggleDurationField
-            );
+            contractType.addEventListener("change", updateFields);
+            durationInput.addEventListener("input", updateFields);
+            startDateInput.addEventListener("change", updateFields);
 
-            toggleDurationField();
+            updateFields();
         });
     </script>
 }

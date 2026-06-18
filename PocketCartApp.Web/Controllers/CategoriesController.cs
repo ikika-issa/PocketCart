@@ -34,19 +34,6 @@ namespace PocketCartApp.Web.Controllers
             return View(categoryService.GetAll());
         }
 
-
-        public IActionResult Details(Guid id)
-        { 
-            var category = categoryService.GetById(id);
-
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
-        }
-
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {

@@ -31,7 +31,11 @@
                 <th>
                     @Html.DisplayNameFor(model => model.CategoryName)
                 </th>
-                <th></th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th></th>
+                }
+                
             </tr>
             <tr class="filters" style="display:none;">
                 <th><input type="text" class="form-control form-control-sm" placeholder="Search Category" /></th>
@@ -48,9 +52,12 @@
                     data-type="text">
                     @item.CategoryName
                  </td>
-                <td>
-                     <a asp-action="Delete" class="btn btn-primary mb-2" asp-route-id="@item.Id">Delete</a>
-                </td>
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <a asp-action="Delete" class="btn btn-primary mb-2" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                }
             </tr>
     }
         </tbody>

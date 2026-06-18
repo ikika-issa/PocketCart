@@ -1,4 +1,5 @@
-﻿using PocketCartApp.Domain.Domain_Models;
+﻿using Microsoft.EntityFrameworkCore;
+using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Repository.Interface;
 using PocketCartApp.Service.Interface;
 using System;
@@ -20,12 +21,14 @@ namespace PocketCartApp.Service.Implementation
 
         public List<Receipt> GetAll()
         {
-            return _receiptRepository.GetAll(selector: x => x).ToList();
+            return _receiptRepository.GetAll(selector: x => x, 
+                include: x => x.Include(z => z.ShoppingCart).ThenInclude(sp => sp.Cashier)).ToList();
         }
 
         public List<Receipt> GetAllByUserId(string userId)
         {
-            return _receiptRepository.GetAll(selector: x => x, predicate: x => x.userId == userId).ToList();
+            return _receiptRepository.GetAll(selector: x => x, predicate: x => x.userId == userId, 
+                include: x => x.Include(z => z.ShoppingCart).ThenInclude(sp => sp.Cashier)).ToList();
         }
 
         public Receipt? GetById(Guid id)

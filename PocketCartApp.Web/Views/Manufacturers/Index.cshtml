@@ -43,10 +43,12 @@
                 <td class="editable" data-id="@item.Id" data-field="ManufacturerName">
                     @item.ManufacturerName
                 </td>
-                <td>
-                    <a asp-action="Details" class="btn btn-primary mb-2" asp-route-id="@item.Id">Details</a> 
-                    <a asp-action="Delete" class="btn btn-primary mb-2" asp-route-id="@item.Id">Delete</a>
-                </td>
+                @if (User.IsInRole("Admin"))
+                {
+                   <td>
+                      <a asp-action="Delete" class="btn btn-primary mb-2" asp-route-id="@item.Id">Delete</a>
+                   </td>
+                }
             </tr>
     }
         </tbody>

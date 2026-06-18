@@ -22,6 +22,8 @@
                 <th>Last name</th>
                 <th>Username</th>
                 <th>Email</th>
+                <th>Start Date</th>
+                <th>End Date</th>
                 <th>Status</th>
                 @if (User.IsInRole("Admin"))
                 {
@@ -38,6 +40,8 @@
                     <td>@employee.LastName</td>
                     <td>@employee.UserName</td>
                     <td>@employee.Email</td>
+                    <td>@employee.StartDate.ToString("dd-MM-yyyy")</td>
+                    <td>@employee.EndDate?.ToString("dd-MM-yyyy")</td>
                     <td>
                         @(employee.LockoutEnd != null && employee.LockoutEnd > DateTimeOffset.Now
                                             ? "Disabled"

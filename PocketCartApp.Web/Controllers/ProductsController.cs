@@ -111,12 +111,19 @@ namespace PocketCartApp.Web.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            _productService.DeleteById(id);
-            return Ok();
+            try
+            {
+                _productService.DeleteById(id);
+                return Ok("Deleted");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         private bool ProductExists(Guid id)
@@ -162,6 +169,16 @@ namespace PocketCartApp.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        public IActionResult ExportProducts()
+        {
+            var fileBytes = _productService.ExportProducts();
+
+            return File(
+                fileBytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Products.xlsx");
+        }
 
         [HttpPost]
         public IActionResult UpdateInline(Guid id, string field, string value)

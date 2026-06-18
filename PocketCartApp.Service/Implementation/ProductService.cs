@@ -1,8 +1,11 @@
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Domain.DTO;
 using PocketCartApp.Repository.Interface;
 using PocketCartApp.Service.Interface;
+using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +65,7 @@ namespace PocketCartApp.Service.Implementation
                 throw new Exception("Invalid EAN-13 barcode format.");
             }
 
-            var shoppingCart = _shoppingCartService.GetByUserId(cashierId);
+            var shoppingCart = _shoppingCartService.GetByUserIdWithIncludedProducts(cashierId);
 
             if (shoppingCart == null)
             {
@@ -71,7 +74,11 @@ namespace PocketCartApp.Service.Implementation
                     Id = Guid.NewGuid(),
                     CashierOnShift = cashierId
                 };
+
+                _shoppingCartService.Insert(shoppingCart);
             }
+
+            shoppingCart.ProductsInCart ??= new List<ProductInShoppingCart>();
 
             var product = GetByBarcode(barcode);
 
@@ -81,10 +88,17 @@ namespace PocketCartApp.Service.Implementation
             }
 
             UpdateCartItem(product, shoppingCart, 1);
+
+            _shoppingCartService.Update(shoppingCart);
         }
 
         private void UpdateCartItem(Product product, ShoppingCart shoppingCart, int quantity)
         {
+            if (shoppingCart.ProductsInCart == null)
+            {
+                shoppingCart.ProductsInCart = new List<ProductInShoppingCart>();
+            }
+
             var existingProduct = GetProductInShoppingCart(product.Id, shoppingCart.Id);
 
             if (existingProduct == null)
@@ -111,10 +125,12 @@ namespace PocketCartApp.Service.Implementation
         public Product DeleteById(Guid id)
         {
             var product = GetById(id);
+
             if (product == null)
             {
                 throw new Exception("Product not found");
             }
+
             _productRepository.Delete(product);
             return product;
         }
@@ -128,7 +144,7 @@ namespace PocketCartApp.Service.Implementation
         public Product? GetById(Guid id)
         {
             return _productRepository.Get(selector: x => x,
-                                           predicate: x => x.Id.Equals(id));
+                                           predicate: x => x.Id == id);
         }
 
         public AddToCartDTO GetSelectedShoppingCartProduct(Guid id)
@@ -144,13 +160,51 @@ namespace PocketCartApp.Service.Implementation
 
             return addProductToCartModel;
         }
+        
+        
+
+        public byte[] ExportProducts()
+        {
+            var products = GetAll();
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Products");
+
+            worksheet.Cell(1, 1).Value = "Barcode";
+            worksheet.Cell(1, 2).Value = "Product Name";
+            worksheet.Cell(1, 3).Value = "Price";
+            worksheet.Cell(1, 4).Value = "Category";
+            worksheet.Cell(1, 5).Value = "Manufacturer";
+            worksheet.Cell(1, 6).Value = "Expiration Date";
+            worksheet.Cell(1, 7).Value = "Quantity";
+
+            int row = 2;
+
+            foreach (var product in products)
+            {
+                 worksheet.Cell(row, 1).Value = product.Barcode;
+                 worksheet.Cell(row, 2).Value = product.ProductName;
+                 worksheet.Cell(row, 3).Value = product.ProductPrice;
+                 worksheet.Cell(row, 4).Value = product.CategoryName;
+                 worksheet.Cell(row, 5).Value = product.Manufacturer?.ManufacturerName;
+                 worksheet.Cell(row, 6).Value = product.ExpirationDate.ToString("dd-MM-yyyy");
+                 worksheet.Cell(row, 7).Value = product.quantity;
+
+                 row++;
+            }
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+
+            return stream.ToArray();
+        }
 
         public Product Insert(Product product, string webRootPath)
         {
             product.Id = Guid.NewGuid();
 
             var barcode = _barcodeService.GenerateEAN13();
-
+             
             product.Barcode = barcode;
 
             product.BarcodeImagePath = _barcodeService.GenerateBarcodeImage(barcode, webRootPath);
