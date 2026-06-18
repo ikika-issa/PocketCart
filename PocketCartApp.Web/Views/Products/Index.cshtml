@@ -87,10 +87,10 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Barcode)
                 </td>
-                <td class="" @(User.IsInRole("Admin") ? "editable" : "")"" data-id="@item.Id" data-field="ProductName" data-type="text">
+                <td class="@(User.IsInRole("Admin") ? "editable" : "")" data-id="@item.Id" data-field="ProductName" data-type="text">
                     @item.ProductName
                 </td>
-                <td class="" @(User.IsInRole("Admin") ? "editable" : "")""
+                <td class=" @(User.IsInRole("Admin") ? "editable" : "")"
                      data-id="@item.Id"
                      data-field="ProductPrice"
                      data-type="number"

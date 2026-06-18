@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Manager")]
     public class ManufacturersController : Controller
     {
         private IManufacturerService _manufacturerService;

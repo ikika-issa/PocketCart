@@ -132,7 +132,8 @@ namespace PocketCartApp.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        
+
+        [Authorize(Roles="Admin,Manager,Cashier")]
         [HttpPost]
         public IActionResult AddByBarcode(string barcode)
         {

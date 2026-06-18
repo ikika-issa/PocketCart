@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Manager")]
     public class CategoriesController : Controller
     {
         private readonly ICategoryService categoryService;
@@ -26,7 +26,7 @@ namespace PocketCartApp.Web.Controllers
             this.categoryAPIService = categoryAPIService;
         }
 
-        // GET: Categories
+       
         public IActionResult Index()
         {
             //var categories = await categoryAPIService.FetchAllCategories();
@@ -34,7 +34,7 @@ namespace PocketCartApp.Web.Controllers
             return View(categoryService.GetAll());
         }
 
-        // GET: Categories/Details/5
+
         public IActionResult Details(Guid id)
         { 
             var category = categoryService.GetById(id);
@@ -47,15 +47,13 @@ namespace PocketCartApp.Web.Controllers
             return View(category);
         }
 
-        // GET: Categories/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("CategoryName,Id")] Category category)
@@ -70,7 +68,7 @@ namespace PocketCartApp.Web.Controllers
             return View(category);
         }
 
-        // GET: Categories/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(Guid id)
         {
             var category = categoryService.GetById(id);
@@ -83,7 +81,7 @@ namespace PocketCartApp.Web.Controllers
             return View(category);
         }
 
-        // POST: Categories/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
@@ -105,6 +103,7 @@ namespace PocketCartApp.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult UpdateInline(Guid id, string value)
         {

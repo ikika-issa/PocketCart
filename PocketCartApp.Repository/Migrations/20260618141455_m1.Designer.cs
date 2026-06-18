@@ -11,7 +11,7 @@ using PocketCartApp.Repository;
 namespace PocketCartApp.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260617203807_m1")]
+    [Migration("20260618141455_m1")]
     partial class m1
     {
         /// <inheritdoc />

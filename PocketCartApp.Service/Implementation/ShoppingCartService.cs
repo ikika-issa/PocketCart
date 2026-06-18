@@ -12,9 +12,11 @@ using System.Net.Mail;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PocketCartApp.Service.Implementation
 {
+    [Authorize]
     public class ShoppingCartService : IShoppingCartService
     {
         private readonly IRepository<ShoppingCart> _shoppingCartRepository;
@@ -123,6 +125,7 @@ namespace PocketCartApp.Service.Implementation
                 ShoppingCartId = userCart.Id,
                 userId = userId,
                 total = totalPrice,
+                PaidAt = DateTime.UtcNow,
                 currency = "MKD"
             };
 

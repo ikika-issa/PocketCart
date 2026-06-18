@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## 18-06-2026
+
+### TO-DO
+- Add custom charts that the admin can choose to look at what they want (Only admin)
+- Add a table of products where the expiration date is in 2 week window (Admin and manager)
+- Add a table of what things are off or in a bundle (All roles)
+- Add a End Date text area in Register if the contract is fixed
+- Add start date, contract type and end date in Employees list
+- Test adding product to cart [DONE]
+- Test printing receipt [DONE]
+- Add a remove product from cart option in case of a misinput/make the quantity editable and if user puts 0 it delets
+the item from the cart
+
 ## 17-06-2026
 
 ### ADDED

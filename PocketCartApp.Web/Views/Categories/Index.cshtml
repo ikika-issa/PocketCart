@@ -42,7 +42,7 @@
 
     @foreach (var item in Model) {
             <tr>
-                <td class="editable"
+                <td class=" @(User.IsInRole("Admin") ? "editable" : "")"
                     data-id="@item.Id"
                     data-field="CategoryName"
                     data-type="text">
