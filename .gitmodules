@@ -1,0 +1,3 @@
+[submodule "esp32-cam"]
+	path = esp32-cam
+	url = https://github.com/StefanAngelovski/esp32-cam
