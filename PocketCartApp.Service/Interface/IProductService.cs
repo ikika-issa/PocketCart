@@ -15,7 +15,7 @@ namespace PocketCartApp.Service.Interface
         Product? GetByBarcode(string barcode);
         Product Insert(Product product, string webRootPath);
         Product Update(Product product);
-        Product DeleteById(Guid id);
+        void DeleteById(Guid id);
         byte[] ExportProducts();
         AddToCartDTO GetSelectedShoppingCartProduct(Guid id);
         void AddProductToShoppingCartByBarcode(string barcode, string cashierId);

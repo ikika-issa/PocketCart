@@ -1,8 +1,155 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model PocketCartApp.Domain.DTO.Dashboard_DTOs.DashboardDTO
+
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Dashboard</h2>
+        <p class="text-muted mb-0">
+            Inventory overview and product expiry insights
+        </p>
+    </div>
 </div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="dashboard-card">
+            <p class="text-muted mb-1">Total Products</p>
+            <h3>@Model.TotalProducts</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="dashboard-card">
+            <p class="text-muted mb-1">Near Expiry</p>
+            <h3>@Model.NearExpiryCount</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="dashboard-card">
+            <p class="text-muted mb-1">Expired</p>
+            <h3>@Model.ExpiredCount</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="dashboard-card">
+            <p class="text-muted mb-1">Low Stock</p>
+            <h3>@Model.LowStockCount</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="products-card">
+            <h5 class="fw-bold mb-3">Products Near Expiry</h5>
+
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Expiry Date</th>
+                        <th>Days Left</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model.NearExpiryProducts)
+                    {
+                        <tr>
+                            <td>@product.ProductName</td>
+                            <td>@product.ExpirationDate.ToString("dd-MM-yyyy")</td>
+                            <td>@product.DaysLeft</td>
+                            <td>@product.Quantity</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+ <div class="col-lg-5">
+        <div class="products-card">
+            <h5 class="fw-bold mb-3">Products by Category</h5>
+
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+@if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+{
+    <li class="nav-item">
+        <a class="nav-link"
+           asp-controller="Deals"
+           asp-action="Index">
+            Deals
+        </a>
+    </li>
+}
+
+<div class="products-card mt-4">
+    <h5 class="fw-bold mb-3">Active Deals</h5>
+
+    @if (Model.ActiveDeals.Any())
+    {
+        <div class="row g-3">
+            @foreach (var deal in Model.ActiveDeals)
+            {
+                <div class="col-md-4">
+                    <div class="deal-card">
+                        <h6 class="fw-bold">@deal.Title</h6>
+                        <p class="text-muted mb-2">@deal.Description</p>
+
+                        <span class="badge bg-success">
+                            @deal.DealType
+                        </span>
+
+                        <p class="mt-2 mb-0">
+                            Valid until @deal.EndDate.ToString("dd-MM-yyyy")
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted mb-0">No active deals right now.</p>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const categoryLabels = [
+            @foreach (var item in Model.ProductsByCategory)
+            {
+                    <text>"@item.CategoryName",</text>
+            }
+        ];
+
+        const categoryData = [
+            @foreach (var item in Model.ProductsByCategory)
+            {
+                    <text>@item.Quantity,</text>
+            }
+        ];
+
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'bar',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    label: 'Quantity',
+                    data: categoryData
+                }]
+            }
+        });
+    </script>
+}

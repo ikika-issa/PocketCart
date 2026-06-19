@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 19-06-2026
+
+### FIXED
+- Admin can now delete products
+- Category can't be deleted
+- Manufacturer can't be deleted
+
 
 ## 18-06-2026
 

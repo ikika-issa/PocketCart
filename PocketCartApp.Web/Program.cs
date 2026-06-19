@@ -59,6 +59,7 @@ builder.Services.AddTransient<IReceiptService, ReceiptingService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<ICategoryAPIService, CategoryAPIService>();
 builder.Services.AddTransient<IManufacturerService, ManufacturerService>();
+builder.Services.AddTransient<IDealsService, DealService>();
 
 builder.Services.AddScoped<IBarcodeService, BarcodeService>();
 builder.Services.AddScoped<IEmailService, EmailService>();

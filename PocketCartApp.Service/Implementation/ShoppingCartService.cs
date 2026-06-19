@@ -23,12 +23,17 @@ namespace PocketCartApp.Service.Implementation
         private readonly IRepository<ShoppingCart> _shoppingCartRepository;
         private readonly IRepository<ProductInShoppingCart> _productInShoppingCartRepository;
         private readonly IRepository<Receipt> _receiptRepository;
+        private readonly IRepository<Product> _productRepository;
 
-        public ShoppingCartService(IRepository<ShoppingCart> shoppingCartRepository, IRepository<ProductInShoppingCart> productInShoppingCartRepository, IRepository<Receipt> receiptRepository)
+        public ShoppingCartService(IRepository<ShoppingCart> shoppingCartRepository, 
+            IRepository<ProductInShoppingCart> productInShoppingCartRepository, 
+            IRepository<Receipt> receiptRepository,
+            IRepository<Product> productRepository)
         {
             _shoppingCartRepository = shoppingCartRepository;
             _productInShoppingCartRepository = productInShoppingCartRepository;
             _receiptRepository = receiptRepository;
+            _productRepository = productRepository;
         }
 
         public void DeleteProductFromShoppingCart(Guid productInShoppingCartId)
@@ -110,7 +115,7 @@ namespace PocketCartApp.Service.Implementation
             );
         }
 
-        public void UpdateQuantity(string userId, Guid productId, double quantity)
+        public bool UpdateQuantity(string userId, Guid productId, double quantity)
         {
             var cart = GetByUserIdWithIncludedProducts(userId);
 
@@ -123,6 +128,11 @@ namespace PocketCartApp.Service.Implementation
             if (item == null)
                 throw new Exception("Product not found in cart.");
 
+            if (quantity > item.Product!.quantity)
+            {
+                return false;
+            }
+
             if (quantity <= 0)
             {
                 cart.ProductsInCart.Remove(item);
@@ -133,6 +143,7 @@ namespace PocketCartApp.Service.Implementation
             }
 
             _shoppingCartRepository.Update(cart);
+            return true;
         }
         public Guid PrintReceipt(string userId)
         {
@@ -151,9 +162,19 @@ namespace PocketCartApp.Service.Implementation
 
             foreach (var item in userCart.ProductsInCart)
             {
+                if (item.Product!.quantity < item.quantity)
+                    throw new Exception($"Not enough stock for {item.Product.ProductName}.");
+            }
+
+            foreach (var item in userCart.ProductsInCart)
+            {
                 totalPrice +=
                     item.quantity *
                     item.Product!.ProductPrice;
+
+                item.Product.quantity -= item.quantity;
+
+                _productRepository.Update(item.Product);
             }
 
             var receipt = new Receipt

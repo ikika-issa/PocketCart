@@ -30,7 +30,6 @@
                 <th>
                     @Html.DisplayNameFor(model => model.ManufacturerName)
                 </th>
-                <th></th>
             </tr>
             <tr class="filters" style="display:none;">
                 <th><input type="text" placeholder="Search Name" /></th>
@@ -40,15 +39,9 @@
         <tbody>
     @foreach (var item in Model) {
             <tr>
-                <td class="editable" data-id="@item.Id" data-field="ManufacturerName">
+                <td class=" @(User.IsInRole("Admin") ? "editable" : "")" data-id="@item.Id" data-field="ManufacturerName">
                     @item.ManufacturerName
                 </td>
-                @if (User.IsInRole("Admin"))
-                {
-                   <td>
-                      <a asp-action="Delete" class="btn btn-primary mb-2" asp-route-id="@item.Id">Delete</a>
-                   </td>
-                }
             </tr>
     }
         </tbody>

@@ -221,6 +221,37 @@ namespace PocketCartApp.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Deals",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    DealType = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProductId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    DiscountPrice = table.Column<double>(type: "REAL", nullable: true),
+                    BundleProductId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    BundlePrice = table.Column<double>(type: "REAL", nullable: true),
+                    StartDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Deals", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Deals_Products_BundleProductId",
+                        column: x => x.BundleProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Deals_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ShoppingCarts",
                 columns: table => new
                 {
@@ -252,11 +283,19 @@ namespace PocketCartApp.Repository.Migrations
                     ProductId = table.Column<Guid>(type: "TEXT", nullable: false),
                     ShoppingCartId = table.Column<Guid>(type: "TEXT", nullable: false),
                     quantity = table.Column<double>(type: "REAL", nullable: false),
-                    unit = table.Column<string>(type: "TEXT", nullable: true)
+                    unit = table.Column<string>(type: "TEXT", nullable: true),
+                    IsDealApplied = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DealId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    UnitPrice = table.Column<double>(type: "REAL", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProductsInShoppingCarts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductsInShoppingCarts_Deals_DealId",
+                        column: x => x.DealId,
+                        principalTable: "Deals",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ProductsInShoppingCarts_Products_ProductId",
                         column: x => x.ProductId,
@@ -281,7 +320,8 @@ namespace PocketCartApp.Repository.Migrations
                     PocketCartApplicationUserId = table.Column<string>(type: "TEXT", nullable: true),
                     total = table.Column<double>(type: "REAL", nullable: false),
                     PaidAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    currency = table.Column<string>(type: "TEXT", nullable: true)
+                    currency = table.Column<string>(type: "TEXT", nullable: true),
+                    PdfPath = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -363,6 +403,16 @@ namespace PocketCartApp.Repository.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Deals_BundleProductId",
+                table: "Deals",
+                column: "BundleProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Deals_ProductId",
+                table: "Deals",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Products_CategoryId",
                 table: "Products",
                 column: "CategoryId");
@@ -381,6 +431,11 @@ namespace PocketCartApp.Repository.Migrations
                 name: "IX_ProductsInReceipts_ReceiptId",
                 table: "ProductsInReceipts",
                 column: "ReceiptId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductsInShoppingCarts_DealId",
+                table: "ProductsInShoppingCarts",
+                column: "DealId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductsInShoppingCarts_ProductId",
@@ -443,6 +498,9 @@ namespace PocketCartApp.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "Receipts");
+
+            migrationBuilder.DropTable(
+                name: "Deals");
 
             migrationBuilder.DropTable(
                 name: "ShoppingCarts");

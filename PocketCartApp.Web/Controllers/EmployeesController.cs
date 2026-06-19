@@ -16,9 +16,20 @@ namespace PocketCartApp.Web.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task <IActionResult> Index()
         {
             var employees = _userManager.Users.ToList();
+
+            ViewBag.UserRoles = new Dictionary<string, string>();
+
+            foreach (var employee in employees)
+            {
+                var roles = await _userManager.GetRolesAsync(employee);
+
+                ViewBag.UserRoles[employee.Id] =
+                    roles.FirstOrDefault() ?? "No Role";
+            }
+
             return View(employees);
         }
 
