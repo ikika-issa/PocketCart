@@ -21,8 +21,13 @@
                 <tr>
                     <td>@item.Product?.Barcode</td>
                     <td>@item.Product?.ProductName</td>
-                    <td>@item.Product?.ProductPrice</td>
-                    <td class="editable-cart-quantity" data-product-id="@item.Product!.Id">@item.quantity</td>
+                    <td>@item.UnitPrice</td>
+                    <td class="editable-cart-quantity"
+                        data-product-id="@item.Product!.Id"
+                        data-max="@item.Product.quantity">
+                        @item.quantity
+                    </td>
+
                     <td>
                         @(item.quantity * (item.Product?.ProductPrice ?? 0))
                     </td>
@@ -322,10 +327,12 @@
 
             const oldValue = cell.innerText.trim();
             const productId = cell.dataset.productId;
+            const max = cell.dataset.max;
 
             const input = document.createElement("input");
             input.type = "number";
             input.min = "0";
+            input.max = max;
             input.step = "1";
             input.value = oldValue;
             input.className = "form-control form-control-sm";
@@ -334,8 +341,27 @@
             cell.appendChild(input);
             input.focus();
 
+            if (parseFloat(input.value) > parseFloat(max))
+            {
+                alert(`Only ${max} items available in stock.`);
+                input.value = max;
+                return;
+            }
+
             function save() {
-                const newQuantity = input.value;
+                     let newQuantity = parseFloat(input.value);
+                    const maxQuantity = parseFloat(cell.dataset.max);
+
+                    if (newQuantity > maxQuantity) {
+                        alert(`Only ${maxQuantity} items are available in stock.`);
+                        newQuantity = maxQuantity;
+                        input.value = maxQuantity;
+                    }
+
+                    if (newQuantity < 0 || isNaN(newQuantity)) {
+                        newQuantity = 0;
+                    }
+
 
                 fetch("/ShoppingCarts/UpdateCartQuantity", {
                     method: "POST",

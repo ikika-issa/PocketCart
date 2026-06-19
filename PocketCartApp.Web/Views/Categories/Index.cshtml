@@ -31,10 +31,6 @@
                 <th>
                     @Html.DisplayNameFor(model => model.CategoryName)
                 </th>
-                @if (User.IsInRole("Admin"))
-                {
-                    <th></th>
-                }
                 
             </tr>
             <tr class="filters" style="display:none;">
@@ -52,12 +48,6 @@
                     data-type="text">
                     @item.CategoryName
                  </td>
-                @if (User.IsInRole("Admin"))
-                {
-                    <td>
-                        <a asp-action="Delete" class="btn btn-primary mb-2" asp-route-id="@item.Id">Delete</a>
-                    </td>
-                }
             </tr>
     }
         </tbody>

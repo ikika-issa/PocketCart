@@ -17,7 +17,7 @@ namespace PocketCartApp.Service.Interface
         ShoppingCartDTO GetByUserIdWithIncludedPrducts(string userId);
         List<ShoppingCart> GetAll();
         void DeleteProductFromShoppingCart(Guid productInShoppingCartId);
-        void UpdateQuantity(string userId, Guid productId, double quantity);
+        bool UpdateQuantity(string userId, Guid productId, double quantity);
         ShoppingCart? GetByUserIdWithIncludedProducts(string userId);
         void ClearCart(string userId);
         Guid PrintReceipt(string userId);

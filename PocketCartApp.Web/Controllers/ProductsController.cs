@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
-    [Authorize]
     public class ProductsController : Controller
     {
         private readonly IProductService _productService;
@@ -110,20 +109,17 @@ namespace PocketCartApp.Web.Controllers
             return View(product);
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(Guid id)
+        [HttpPost("Products/DeleteConfirmed")]
+        public IActionResult DeleteConfirmed([FromQuery] Guid id)
         {
-            try
-            {
-                _productService.DeleteById(id);
-                return Ok("Deleted");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            Console.WriteLine($"DELETE HIT. ID = {id}");
+
+            if (id == Guid.Empty)
+                return BadRequest("ID is empty.");
+
+            _productService.DeleteById(id);
+
+            return Ok("Deleted");
         }
 
         private bool ProductExists(Guid id)

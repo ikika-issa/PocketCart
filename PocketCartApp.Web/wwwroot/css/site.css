@@ -520,3 +520,15 @@ html[data-theme="light"] .navbar-brand:hover {
 .barcode-input-cell {
     cursor: pointer;
 }
+
+.dashboard-card {
+    background: white;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+    .dashboard-card h3 {
+        font-weight: 700;
+        margin-bottom: 0;
+    }

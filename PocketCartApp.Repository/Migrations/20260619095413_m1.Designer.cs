@@ -11,7 +11,7 @@ using PocketCartApp.Repository;
 namespace PocketCartApp.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260618181855_m1")]
+    [Migration("20260619095413_m1")]
     partial class m1
     {
         /// <inheritdoc />
@@ -163,6 +163,52 @@ namespace PocketCartApp.Repository.Migrations
                     b.ToTable("Category");
                 });
 
+            modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.Deal", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("BundlePrice")
+                        .HasColumnType("REAL");
+
+                    b.Property<Guid?>("BundleProductId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DealType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("DiscountPrice")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BundleProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Deals");
+                });
+
             modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.Manufacturer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -251,11 +297,20 @@ namespace PocketCartApp.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("DealId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDealApplied")
+                        .HasColumnType("INTEGER");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("ShoppingCartId")
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("UnitPrice")
+                        .HasColumnType("REAL");
 
                     b.Property<double>("quantity")
                         .HasColumnType("REAL");
@@ -264,6 +319,8 @@ namespace PocketCartApp.Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DealId");
 
                     b.HasIndex("ProductId");
 
@@ -279,6 +336,9 @@ namespace PocketCartApp.Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("PaidAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PdfPath")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PocketCartApplicationUserId")
@@ -468,6 +528,21 @@ namespace PocketCartApp.Repository.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.Deal", b =>
+                {
+                    b.HasOne("PocketCartApp.Domain.Domain_Models.Product", "BundleProduct")
+                        .WithMany()
+                        .HasForeignKey("BundleProductId");
+
+                    b.HasOne("PocketCartApp.Domain.Domain_Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("BundleProduct");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.Product", b =>
                 {
                     b.HasOne("PocketCartApp.Domain.Domain_Models.Category", null)
@@ -506,6 +581,10 @@ namespace PocketCartApp.Repository.Migrations
 
             modelBuilder.Entity("PocketCartApp.Domain.Domain_Models.ProductInShoppingCart", b =>
                 {
+                    b.HasOne("PocketCartApp.Domain.Domain_Models.Deal", "Deal")
+                        .WithMany()
+                        .HasForeignKey("DealId");
+
                     b.HasOne("PocketCartApp.Domain.Domain_Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
@@ -517,6 +596,8 @@ namespace PocketCartApp.Repository.Migrations
                         .HasForeignKey("ShoppingCartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Deal");
 
                     b.Navigation("Product");
 

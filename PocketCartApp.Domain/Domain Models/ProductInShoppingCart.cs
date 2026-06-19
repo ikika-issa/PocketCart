@@ -13,6 +13,10 @@ namespace PocketCartApp.Domain.Domain_Models
         public Guid ShoppingCartId { get; set; }
         public ShoppingCart? ShoppingCart { get; set; }
         public double quantity {  get; set; }
-        public string? unit {  get; set; } 
+        public string? unit {  get; set; }
+        public bool IsDealApplied { get; set; }
+        public Guid? DealId { get; set; }
+        public Deal? Deal { get; set; }
+        public double UnitPrice { get; set; }
     }
 }
