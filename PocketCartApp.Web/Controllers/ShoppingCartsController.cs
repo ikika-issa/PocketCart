@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
+using PocketCartApp.Domain.DTO;
 using PocketCartApp.Domain.Identity_Models;
 using PocketCartApp.Repository;
 using PocketCartApp.Service.Interface;
@@ -28,14 +29,12 @@ namespace PocketCartApp.Web.Controllers
         }
 
 
-        // GET: ShoppingCarts
         [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View(_shoppingCartService.GetAll());
         }
 
-        // GET: ShoppingCarts/Details/5
         public IActionResult Details(Guid id)
         {
             var shoppingCart = _shoppingCartService.GetById(id);
@@ -47,15 +46,11 @@ namespace PocketCartApp.Web.Controllers
             return View(shoppingCart);
         }
 
-        // GET: ShoppingCarts/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: ShoppingCarts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("CashierOnShift,Id")] ShoppingCart shoppingCart)
@@ -70,7 +65,6 @@ namespace PocketCartApp.Web.Controllers
         }
 
 
-        // POST: ShoppingCarts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(Guid id)
@@ -87,29 +81,48 @@ namespace PocketCartApp.Web.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var shoppingCart = _shoppingCartService.GetByUserIdWithIncludedPrducts(userId!);
-            return View(shoppingCart);
+
+            var dto = new ShoppingCartDTO
+            {
+                ProductsInCart = shoppingCart?.ProductsInCart?.ToList() ?? new List<ProductInShoppingCart>()
+            };
+
+            return View(dto);
         }
 
-        public async Task<IActionResult> ClearCart(string cashierCode)
+        [HttpPost]
+        public IActionResult ClearCart(string cashierCode)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var user = await _userManager.FindByIdAsync(userId!);
+            var cart = _shoppingCartService.GetByUserIdWithIncludedProducts(userId);
 
-            if (user == null)
-                return Unauthorized();
-
-            if (user.cashierId != cashierCode)
+            if (cart == null ||
+                cart.ProductsInCart == null ||
+                !cart.ProductsInCart.Any())
             {
-                TempData["Error"] = "Invalid Cashier ID.";
-                return RedirectToAction(nameof(CartIndex));
+                TempData["Error"] = "Cart is already empty.";
+                return RedirectToAction("CartIndex");
             }
 
-            _shoppingCartService.ClearCart(userId!);
+            _shoppingCartService.ClearCart(userId);
 
             TempData["Success"] = "Cart cleared successfully.";
 
-            return RedirectToAction(nameof(CartIndex));
+            return RedirectToAction("CartIndex");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateCartQuantity(Guid productId, double quantity)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
+
+            _shoppingCartService.UpdateQuantity(userId, productId, quantity);
+
+            return Ok();
         }
 
         public IActionResult Checkout()
@@ -121,10 +134,15 @@ namespace PocketCartApp.Web.Controllers
                 return Unauthorized();
             }
 
-            _shoppingCartService.PrintReceipt(userId);
-            _shoppingCartService.ClearCart(userId);
+            var receiptId = _shoppingCartService.PrintReceipt(userId);
 
-            return RedirectToAction(nameof(CartIndex));
+            if (receiptId == Guid.Empty)
+            {
+                TempData["Error"] = "Cart is empty. Cannot print receipt.";
+                return RedirectToAction("CartIndex");
+            }
+
+            return RedirectToAction(nameof(CartIndex), new {receiptId});
         }
 
         public IActionResult Scanner()

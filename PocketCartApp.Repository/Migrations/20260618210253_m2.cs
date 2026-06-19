@@ -5,25 +5,24 @@
 namespace PocketCartApp.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class m3 : Migration
+    public partial class m2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "Account_Status",
-                table: "AspNetUsers",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            migrationBuilder.AddColumn<string>(
+                name: "PdfPath",
+                table: "Receipts",
+                type: "TEXT",
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Account_Status",
-                table: "AspNetUsers");
+                name: "PdfPath",
+                table: "Receipts");
         }
     }
 }

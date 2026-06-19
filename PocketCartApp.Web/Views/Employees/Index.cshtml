@@ -1,0 +1,102 @@
+﻿@model IEnumerable<PocketCartApp.Domain.Identity_Models.PocketCartApplicationUser>
+@using Microsoft.AspNetCore.Identity
+@using PocketCartApp.Domain.Identity_Models
+@inject UserManager<PocketCartApplicationUser> UserManager
+
+<h2>Employees</h2>
+
+@if (User.IsInRole("Admin"))
+{
+    <a class="btn btn-primary mb-3"
+       asp-area="Identity"
+       asp-page="/Account/Register">
+        Add New Employee
+    </a>
+}
+
+<div class="products-card">
+    <table class="table align-middle" id="employeeTable">
+        <thead>
+            <tr>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th></th>
+                }
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.UserName</td>
+                    <td>@employee.Email</td>
+                    <td>@employee.StartDate.ToString("dd-MM-yyyy")</td>
+                    <td>@employee.EndDate?.ToString("dd-MM-yyyy")</td>
+                    <td>
+                        @(employee.LockoutEnd != null && employee.LockoutEnd > DateTimeOffset.Now
+                                            ? "Disabled"
+                                            : "Active")
+                </td>
+                
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td>
+                            @if (employee.LockoutEnd != null &&
+                                                employee.LockoutEnd > DateTimeOffset.Now)
+                            {
+                                
+                                <form asp-action="Enable" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@employee.Id" />
+
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        Enable Account
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                @if (employee.Id == UserManager.GetUserId(User))
+                                {
+                                    <button type="button"
+                                            class="btn btn-secondary btn-sm"
+                                            onclick="alert('You cannot disable the account you are currently logged into.')">
+                                        Disable Account
+                                    </button>
+                                }
+                                else
+                                {
+                                    <form asp-action="Disable" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@employee.Id" />
+
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="showDisableWarning">
+                                            Disable Account
+                                        </button>
+                                    </form>
+                                }
+                            }
+                        </td>
+                    }
+                
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function showDisableWarning() {
+        alert("You cannot disable the account you are currently logged into.");
+    }
+</script>

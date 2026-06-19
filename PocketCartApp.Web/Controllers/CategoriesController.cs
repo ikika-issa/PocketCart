@@ -1,17 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Repository;
 using PocketCartApp.Service.API.Interface;
+using PocketCartApp.Service.Implementation;
 using PocketCartApp.Service.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
+    [Authorize(Roles = "Admin, Manager")]
     public class CategoriesController : Controller
     {
         private readonly ICategoryService categoryService;
@@ -23,7 +26,7 @@ namespace PocketCartApp.Web.Controllers
             this.categoryAPIService = categoryAPIService;
         }
 
-        // GET: Categories
+       
         public IActionResult Index()
         {
             //var categories = await categoryAPIService.FetchAllCategories();
@@ -31,28 +34,13 @@ namespace PocketCartApp.Web.Controllers
             return View(categoryService.GetAll());
         }
 
-        // GET: Categories/Details/5
-        public IActionResult Details(Guid id)
-        { 
-            var category = categoryService.GetById(id);
-
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
-        }
-
-        // GET: Categories/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("CategoryName,Id")] Category category)
@@ -67,52 +55,7 @@ namespace PocketCartApp.Web.Controllers
             return View(category);
         }
 
-        // GET: Categories/Edit/5
-        public IActionResult Edit(Guid id)
-        {
-            var category = categoryService.GetById(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-            return View(category);
-        }
-
-        // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("CategoryName,Id")] Category category)
-        {
-            if (id != category.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    categoryService.Update(category);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(category);
-        }
-
-        // GET: Categories/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(Guid id)
         {
             var category = categoryService.GetById(id);
@@ -125,7 +68,7 @@ namespace PocketCartApp.Web.Controllers
             return View(category);
         }
 
-        // POST: Categories/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
@@ -147,9 +90,23 @@ namespace PocketCartApp.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(Guid id)
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public IActionResult UpdateInline(Guid id, string value)
         {
-            return categoryService.GetById(id) != null;
+            if (string.IsNullOrWhiteSpace(value))
+                return BadRequest();
+
+            var category = categoryService.GetById(id);
+
+            if (category == null)
+                return NotFound();
+
+            category.CategoryName = value;
+
+            categoryService.Update(category);
+
+            return Ok();
         }
     }
 }

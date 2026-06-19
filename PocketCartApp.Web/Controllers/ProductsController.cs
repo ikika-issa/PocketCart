@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +7,15 @@ using PocketCartApp.Domain.DTO;
 using PocketCartApp.Repository;
 using PocketCartApp.Service.API.Interface;
 using PocketCartApp.Service.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly IProductService _productService;
@@ -33,8 +35,7 @@ namespace PocketCartApp.Web.Controllers
             _manufacturerService = manufacturerService;
         }
 
-
-        // GET: Products
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult Index()
         {
             ViewBag.Categories = _categoryService.GetAll()
@@ -45,24 +46,18 @@ namespace PocketCartApp.Web.Controllers
                 })
                 .ToList();
 
+            ViewBag.Manufacturers = _manufacturerService.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.ManufacturerName
+                })
+                .ToList();
+
             return View(_productService.GetAll());
         }
 
-        // GET: Products/Details/5
-        public IActionResult Details(Guid id)
-        {
-
-            var product = _productService.GetById(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
-        }
-
-        // GET: Products/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewBag.Categories = _categoryService.GetAll()
@@ -84,9 +79,7 @@ namespace PocketCartApp.Web.Controllers
             return View();
         }
 
-        // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("ProductName,ProductPrice,CategoryId,ExpirationDate, quantity, ManufacturerId")] Product product)
@@ -117,32 +110,20 @@ namespace PocketCartApp.Web.Controllers
             return View(product);
         }
 
-        // GET: Products/Delete/5
-        public IActionResult Delete(Guid id)
-        {
-            var product = _productService.GetById(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
-        }
-
-        // POST: Products/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var product = _productService.GetById(id);
-
-            if (product != null)
+            try
             {
                 _productService.DeleteById(id);
+                return Ok("Deleted");
             }
-
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         private bool ProductExists(Guid id)
@@ -158,7 +139,8 @@ namespace PocketCartApp.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        
+
+        [Authorize(Roles="Admin,Manager,Cashier")]
         [HttpPost]
         public IActionResult AddByBarcode(string barcode)
         {
@@ -173,7 +155,7 @@ namespace PocketCartApp.Web.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                return BadRequest(ex.Message);
             }
 
             return RedirectToAction("CartIndex", "ShoppingCarts");
@@ -185,6 +167,17 @@ namespace PocketCartApp.Web.Controllers
             await _productImportService.ImportSampleProductsAsync(_environment.WebRootPath);
 
             return RedirectToAction(nameof(Index));
+        }
+
+
+        public IActionResult ExportProducts()
+        {
+            var fileBytes = _productService.ExportProducts();
+
+            return File(
+                fileBytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Products.xlsx");
         }
 
         [HttpPost]
@@ -202,7 +195,13 @@ namespace PocketCartApp.Web.Controllers
                     break;
 
                 case "ProductPrice":
-                    product.ProductPrice = double.Parse(value);
+                    if (string.IsNullOrWhiteSpace(value))
+                        return BadRequest("Price is empty");
+
+                    if (!double.TryParse(value, out double price))
+                        return BadRequest("Invalid price");
+
+                    product.ProductPrice = price;
                     break;
 
                 case "quantity":
@@ -212,8 +211,26 @@ namespace PocketCartApp.Web.Controllers
                 case "CategoryId":
                     product.CategoryId = Guid.Parse(value);
 
-                    var category = _categoryService.GetById(product.CategoryId.Value);
+                    var category = _categoryService.GetById(product.CategoryId);
                     product.CategoryName = category?.CategoryName;
+                    break;
+
+                case "ManufacturerId":
+                    product.ManufacturerId = Guid.Parse(value);
+
+                    var manufacturer = _manufacturerService.GetById(product.ManufacturerId);
+
+                    if (manufacturer == null)
+                        return BadRequest();
+
+                    product.Manufacturer = manufacturer;
+                    break;
+
+                case "ExpirationDate":
+                    if (!DateOnly.TryParse(value, out DateOnly expirationDate))
+                        return BadRequest();
+
+                    product.ExpirationDate = expirationDate;
                     break;
 
                 default:

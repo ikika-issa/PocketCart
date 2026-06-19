@@ -9,7 +9,7 @@ namespace PocketCartApp.Domain.DTO
 {
     public class ShoppingCartDTO
     {
-        public List<ProductInShoppingCart>? Products { get; set; }
+        public List<ProductInShoppingCart>? ProductsInCart { get; set; }
         public double TotalPrice { get; set; }
     }
 }

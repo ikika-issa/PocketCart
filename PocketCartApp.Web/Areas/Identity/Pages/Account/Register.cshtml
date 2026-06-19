@@ -1,113 +1,149 @@
 ﻿@page
 @using PocketCartApp.Domain.Domain_Models
 @model RegisterModel
+
 @{
     ViewData["Title"] = "Register";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="register-page">
+    <div class="register-card">
 
-<div class="row">
-    <div class="col-md-4">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-1">New Employee</h2>
+        </div>
+
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Input.FirstName" class="form-control" autocomplete="off" aria-required="true" placeholder="First Name" />
-                <label asp-for="Input.FirstName">First Name</label>
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3"
+                 role="alert"></div>
+
+            <div class="form-group mb-4">
+                <label asp-for="Input.FirstName" class="form-label">First Name</label>
+                <input asp-for="Input.FirstName"
+                       class="form-control"
+                       autocomplete="off" />
                 <span asp-validation-for="Input.FirstName" class="text-danger"></span>
             </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Input.LastName" class="form-control" autocomplete="off" aria-required="true" placeholder="Last Name" />
-                <label asp-for="Input.LastName">Last Name</label>
+            <div class="form-group mb-4">
+                <label asp-for="Input.LastName" class="form-label">Last Name</label>
+                <input asp-for="Input.LastName"
+                       class="form-control"
+                       autocomplete="off" />
                 <span asp-validation-for="Input.LastName" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Input.StartDate"></label>
-                <input asp-for="Input.StartDate" type="date" class="form-control" />
+            <div class="form-group mb-4">
+                <label asp-for="Input.StartDate" class="form-label">Start Date</label>
+                <input asp-for="Input.StartDate"
+                       type="date"
+                       class="form-control" />
                 <span asp-validation-for="Input.StartDate" class="text-danger"></span>
             </div>
 
-            <div class="form-group mt-3">
-                <label asp-for="Input.Contract_Type"></label>
+            <div class="form-group mb-4">
+                <label asp-for="Input.Contract_Type" class="form-label">
+                    Contract Type
+                </label>
+
                 <select asp-for="Input.Contract_Type"
-                        class="form-control"
+                        class="form-select"
                         asp-items="Html.GetEnumSelectList<Contract_Type>()">
                 </select>
+
                 <span asp-validation-for="Input.Contract_Type" class="text-danger"></span>
             </div>
 
-             <div class="form-group mt-3" id="durationField" style="display:none;">
-                    <label asp-for="Input.duration">Duration in Months</label>
-                    <input asp-for="Input.duration" class="form-control" placeholder="Duration in months" />
-                    <span asp-validation-for="Input.duration" class="text-danger"></span>
+            <div class="form-group mb-4"
+                 id="durationField"
+                 style="display:none;">
+
+                <label asp-for="Input.duration" class="form-label">
+                    Duration in Months
+                </label>
+
+                <input asp-for="Input.duration"
+                       class="form-control" />
+
+                <span asp-validation-for="Input.duration" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Input.Account_Status" class="control-label">Account status</label>
+            <div class="form-group mt-3" id="endDateField" style="display:none;">
+                <label class="form-label">End Date</label>
+                <input type="text"
+                       id="calculatedEndDate"
+                       class="form-control"
+                       readonly />
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="Input.Account_Status" class="form-label">
+                    Account Status
+                </label>
 
                 <select asp-for="Input.Account_Status"
-                        class="form-control"
+                        class="form-select"
                         asp-items="Html.GetEnumSelectList<Account_Status>()">
                 </select>
 
                 <span asp-validation-for="Input.Account_Status" class="text-danger"></span>
             </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
+            <div class="form-group mb-4">
+                <label asp-for="Input.Role" class="form-label">
+                    Role
+                </label>
+
+                <select asp-for="Input.Role"
+                        class="form-select"
+                        asp-items="Model.RolesList">
+                    <option value="">Select role</option>
+                </select>
+
+                <span asp-validation-for="Input.Role" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="Input.Email" class="form-label">Email</label>
+
+                <input asp-for="Input.Email"
+                       class="form-control"
+                       autocomplete="username" />
+
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
+            <div class="form-group mb-4">
+                <label asp-for="Input.Password" class="form-label">Password</label>
+
+                <input asp-for="Input.Password"
+                       class="form-control"
+                       autocomplete="new-password" />
+
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+            <div class="form-group mb-4">
+                <label asp-for="Input.ConfirmPassword" class="form-label">
+                    Confirm Password
+                </label>
+
+                <input asp-for="Input.ConfirmPassword"
+                       class="form-control"
+                       autocomplete="new-password" />
+
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
 
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+            <button id="registerSubmit"
+                    type="submit"
+                    class="btn btn-success btn-lg w-100">
+                Create Employee
+            </button>
+
         </form>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
-        </section>
     </div>
 </div>
 
@@ -116,22 +152,53 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const contractType = document.getElementById("Input_Contract_Type");
-            const durationField = document.getElementById("durationField");
 
-            function toggleDurationField() {
+            const contractType = document.getElementById("Input_Contract_Type");
+            const durationInput = document.getElementById("Input_duration");
+            const startDateInput = document.getElementById("Input_StartDate");
+
+            const durationField = document.getElementById("durationField");
+            const endDateField = document.getElementById("endDateField");
+            const calculatedEndDate = document.getElementById("calculatedEndDate");
+
+            function updateFields() {
+
                 const selectedText =
                     contractType.options[contractType.selectedIndex].text;
 
                 if (selectedText === "Fixed") {
+
                     durationField.style.display = "block";
-                } else {
+                    endDateField.style.display = "block";
+
+                    const startDate = startDateInput.value;
+                    const duration = parseInt(durationInput.value);
+
+                    if (startDate && !isNaN(duration)) {
+
+                        const date = new Date(startDate);
+
+                        date.setMonth(date.getMonth() + duration);
+
+                        calculatedEndDate.value =
+                            date.toLocaleDateString("en-GB");
+                    }
+                    else {
+                        calculatedEndDate.value = "";
+                    }
+                }
+                else {
                     durationField.style.display = "none";
+                    endDateField.style.display = "none";
+                    calculatedEndDate.value = "";
                 }
             }
 
-            contractType.addEventListener("change", toggleDurationField);
-            toggleDurationField();
+            contractType.addEventListener("change", updateFields);
+            durationInput.addEventListener("input", updateFields);
+            startDateInput.addEventListener("change", updateFields);
+
+            updateFields();
         });
     </script>
 }

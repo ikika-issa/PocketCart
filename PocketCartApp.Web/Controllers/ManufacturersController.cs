@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
+    [Authorize(Roles = "Admin, Manager")]
     public class ManufacturersController : Controller
     {
         private IManufacturerService _manufacturerService;
@@ -21,14 +23,12 @@ namespace PocketCartApp.Web.Controllers
             _manufacturerService = manufacturerService;
         }
 
-        // GET: Manufacturers
         public IActionResult Index()
         {
             var manufacturers = _manufacturerService.GetAll();
             return View(manufacturers);
         }
 
-        // GET: Manufacturers/Details/5
         public IActionResult Details(Guid id)
         {
             var manufacturer = _manufacturerService.GetById(id);    

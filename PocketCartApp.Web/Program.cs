@@ -36,6 +36,11 @@ builder.Services.AddIdentity<PocketCartApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+});
+
 builder.Services.AddHttpClient<IOpenFoodFactsService, OpenFoodFactsService>(client =>
 {
     client.BaseAddress = new Uri("https://world.openfoodfacts.org/");
@@ -113,6 +118,21 @@ using (var scope = app.Services.CreateScope())
         var productImportService = services.GetRequiredService<IOpenFoodFactsService>();
         var env = services.GetRequiredService<IWebHostEnvironment>();
         await productImportService.ImportSampleProductsAsync(env.WebRootPath);
+    }
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string[] roles = { "Admin", "Manager", "Cashier" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
     }
 }
 
