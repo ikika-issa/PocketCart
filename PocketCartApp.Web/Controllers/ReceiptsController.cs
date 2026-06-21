@@ -1,16 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
 using PocketCartApp.Repository;
 using PocketCartApp.Service.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
+    [Authorize]
     public class ReceiptsController : Controller
     {
         private readonly IReceiptService _receiptService;
@@ -20,72 +24,39 @@ namespace PocketCartApp.Web.Controllers
             _receiptService = receiptService;
         }
 
-        // GET: Receipts
         public IActionResult Index()
         {
-            return View(_receiptService.GetAll());
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (User.IsInRole("Cashier"))
+            {
+                return View(_receiptService.GetAllByUserId(userId!));
+            }
+            else
+            {
+                return View(_receiptService.GetAll());
+            }   
         }
 
-        // GET: Receipts/Details/5
-        public IActionResult Details(Guid id)
+        public IActionResult ExportCsv()
         {
-            var receipt = _receiptService.GetById(id);
+            var receipts = _receiptService.GetAll();
 
-            if (receipt == null)
+            var csv = new StringBuilder();
+
+            csv.AppendLine("Cashier,Date,Total,Currency");
+
+            foreach (var r in receipts)
             {
-                return NotFound();
+                csv.AppendLine($"{r.PocketCartApplicationUser?.UserName}," +
+                    $"{r.PaidAt:dd-MM-yyyy HH:mm},{r.total},{r.currency}");
             }
 
-            return View(receipt);
-        }
-
-        // GET: Receipts/Create
-        public IActionResult Create()
-        {
-            //ViewData["ShoppingCartId"] = new SelectList(_context.ShoppingCarts, "Id", "Id");
-            return View(_receiptService.GetAll());
-        }
-
-        // POST: Receipts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("ShoppingCartId,total,currency,Id")] Receipt receipt)
-        {
-            if (ModelState.IsValid)
-            {
-                _receiptService.Insert(receipt);
-                return RedirectToAction(nameof(Index));
-            }
-            //ViewData["ShoppingCartId"] = new SelectList(_context.ShoppingCarts, "Id", "Id", receipt.ShoppingCartId);
-            return View(receipt);
-        }
-
-        // GET: Receipts/Delete/5
-        public IActionResult Delete(Guid id)
-        {
-            var receipt = _receiptService.GetById(id);
-            if (receipt == null)
-            {
-                return NotFound();
-            }
-
-            return View(receipt);
-        }
-
-        // POST: Receipts/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(Guid id)
-        {
-            var receipt = _receiptService.GetById(id);
-
-            if (receipt != null)
-            {
-                _receiptService.DeleteById(id);
-            }
-            return RedirectToAction(nameof(Index));
+            return File(
+                Encoding.UTF8.GetBytes(csv.ToString()),
+                "text/csv",
+                "Receipts.csv"
+            );
         }
     }
 }

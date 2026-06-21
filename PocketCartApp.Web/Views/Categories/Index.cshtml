@@ -1,36 +1,134 @@
-﻿@model IEnumerable<PocketCartApp.Domain.Domain_Models.Category>
+@model IEnumerable<PocketCartApp.Domain.Domain_Models.Category>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categories";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Categories</h2>
+        <p class="text-muted mb-0">
+            View and manage categories
+        </p>
+    </div>
+</div>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-outline-primary mb-2">Add new</a>
+    }
+    <button id="toggleFilters" class="btn btn-primary mb-2">
+        Toggle Filters
+    </button>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+
+<div class="products-card">
+    <table class="table align-middle mb-0" id="categoriesTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.CategoryName)
+                </th>
+                
+            </tr>
+            <tr class="filters" style="display:none;">
+                <th><input type="text" class="form-control form-control-sm" placeholder="Search Category" /></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+
+    @foreach (var item in Model) {
+            <tr>
+                <td class=" @(User.IsInRole("Admin") ? "editable" : "")"
+                    data-id="@item.Id"
+                    data-field="CategoryName"
+                    data-type="text">
+                    @item.CategoryName
+                 </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        function createInputEditor(cell) {
+            if (cell.querySelector("input")) return;
+
+            const oldValue = cell.innerText.trim();
+            const categoryId = cell.dataset.id;
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = oldValue;
+            input.className = "form-control form-control-sm";
+
+            cell.innerHTML = "";
+            cell.appendChild(input);
+            input.focus();
+
+            function save() {
+                const newValue = input.value;
+
+                fetch(`/Categories/UpdateInline?id=${categoryId}&value=${encodeURIComponent(newValue)}`, {
+                    method: "POST"
+                })
+                .then(response => {
+                    if (response.ok) {
+                        cell.innerText = newValue;
+                    } else {
+                        cell.innerText = oldValue;
+                        alert("Update failed.");
+                    }
+                })
+                .catch(() => {
+                    cell.innerText = oldValue;
+                    alert("Update failed.");
+                });
+            }
+
+            input.addEventListener("blur", save);
+
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") input.blur();
+
+                if (e.key === "Escape") {
+                    cell.innerText = oldValue;
+                }
+            });
+        }
+
+        document.querySelectorAll(".editable").forEach(cell => {
+            cell.addEventListener("dblclick", () => createInputEditor(cell));
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            const table = $('#categoriesTable').DataTable({
+                orderCellsTop: true
+            });
+
+            $('#toggleFilters').on('click', function () {
+                $('.filters').toggle();
+            });
+
+            $('.filters th').each(function (index) {
+                const input = $(this).find('input');
+
+                if (input.length) {
+                    input.on('keyup change clear', function () {
+                        table
+                            .column(index)
+                            .search(this.value)
+                            .draw();
+                    });
+                }
+            });
+        });
+    </script>
 }
-    </tbody>
-</table>

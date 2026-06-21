@@ -1,0 +1,55 @@
+﻿@using PocketCartApp.Domain.Domain_Models
+@model IEnumerable<PocketCartApp.Domain.Domain_Models.Deal>
+
+<h2>Deals</h2>
+
+<a asp-action="Create" class="btn btn-success mb-3">
+    Add Deal
+</a>
+
+<div class="products-card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Product</th>
+                <th>Bundle Product</th>
+                <th>Price</th>
+                <th>Valid</th>
+                <th>Active</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var deal in Model)
+            {
+                <tr>
+                    <td>@deal.Title</td>
+                    <td>@deal.DealType</td>
+                    <td>@deal.Product?.ProductName</td>
+                    <td>@deal.BundleProduct?.ProductName</td>
+                    <td>
+                        @(deal.DealType == DealType.Priceoff
+                                            ? $"{deal.DiscountPrice} MKD"
+                                            : $"{deal.BundlePrice} MKD")
+                </td>
+                <td>
+                    @deal.StartDate.ToString("dd-MM-yyyy")
+                    -
+                    @deal.EndDate.ToString("dd-MM-yyyy")
+                </td>
+                <td>@(deal.IsActive ? "Yes" : "No")</td>
+                <td>
+                    <a asp-action="Delete"
+                       asp-route-id="@deal.Id"
+                       class="btn btn-danger btn-sm">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+                        }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,129 @@
+﻿@model IEnumerable<PocketCartApp.Domain.Domain_Models.Manufacturer>
+
+@{
+    ViewData["Title"] = "Manufacturers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Manufacturers</h2>
+        <p class="text-muted mb-0">
+            View and manage manufacturers
+        </p>
+    </div>
+</div>
+
+<p>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-outline-primary mb-2">Add new</a>
+    }
+    <button id="toggleFilters" class="btn btn-primary mb-2">
+        Toggle Filters
+    </button>
+</p>
+<div class="products-card">
+    <table class="table align-middle mb-0" id="manufacturersTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ManufacturerName)
+                </th>
+            </tr>
+            <tr class="filters" style="display:none;">
+                <th><input type="text" placeholder="Search Name" /></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td class=" @(User.IsInRole("Admin") ? "editable" : "")" data-id="@item.Id" data-field="ManufacturerName">
+                    @item.ManufacturerName
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".editable").forEach(cell => {
+            cell.addEventListener("dblclick", function () {
+                if (cell.querySelector("input")) return;
+
+                const oldValue = cell.innerText.trim();
+                const manufacturerId = cell.dataset.id;
+                const field = cell.dataset.field;
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.value = oldValue;
+                input.className = "form-control form-control-sm";
+
+                cell.innerHTML = "";
+                cell.appendChild(input);
+                input.focus();
+
+                function save() {
+                    const newValue = input.value;
+
+                    fetch(`/Manufacturers/UpdateInline?id=${manufacturerId}&field=${field}&value=${encodeURIComponent(newValue)}`, {
+                        method: "POST"
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            cell.innerText = newValue;
+                        } else {
+                            cell.innerText = oldValue;
+                            alert("Update failed.");
+                        }
+                    })
+                    .catch(() => {
+                        cell.innerText = oldValue;
+                        alert("Error while updating.");
+                    });
+                }
+
+                input.addEventListener("blur", save);
+
+                input.addEventListener("keydown", function (e) {
+                    if (e.key === "Enter") input.blur();
+
+                    if (e.key === "Escape") {
+                        cell.innerText = oldValue;
+                    }
+                });
+            });
+        });
+    </script>
+
+        @* SEARCH FUNCTION ACCROSS ALL COLUMNS *@
+    <script>
+        $(document).ready(function () {
+
+            const table = $('#manufacturersTable').DataTable({
+                orderCellsTop: true
+            });
+
+            $('#toggleFilters').on('click', function () {
+                $('.filters').toggle();
+            });
+
+            $('.filters th').each(function (index) {
+                const input = $(this).find('input');
+
+                if (input.length) {
+                    input.on('keyup change clear', function () {
+                        table
+                            .column(index)
+                            .search(this.value)
+                            .draw();
+                    });
+                }
+            });
+        });
+    </script>
+}

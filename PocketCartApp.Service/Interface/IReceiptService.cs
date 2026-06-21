@@ -11,9 +11,9 @@ namespace PocketCartApp.Service.Interface
     public interface IReceiptService
     {
         List<Receipt> GetAll();
+        List<Receipt> GetAllByUserId(string userId);
         Receipt? GetById(Guid id);
         Receipt Insert(Receipt receipt);
         Receipt Update(Receipt receipt);
-        Receipt DeleteById(Guid id);
     }
 }

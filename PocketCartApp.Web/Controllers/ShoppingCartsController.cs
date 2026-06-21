@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PocketCartApp.Domain.Domain_Models;
+using PocketCartApp.Domain.DTO;
+using PocketCartApp.Domain.Identity_Models;
 using PocketCartApp.Repository;
 using PocketCartApp.Service.Interface;
 using System;
@@ -12,23 +16,25 @@ using System.Threading.Tasks;
 
 namespace PocketCartApp.Web.Controllers
 {
+    [Authorize]
     public class ShoppingCartsController : Controller
     {
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly UserManager<PocketCartApplicationUser> _userManager;
 
-        public ShoppingCartsController(IShoppingCartService shoppingCartService)
+        public ShoppingCartsController(IShoppingCartService shoppingCartService, UserManager<PocketCartApplicationUser> userManager)
         {
             _shoppingCartService = shoppingCartService;
+            _userManager = userManager;
         }
 
 
-        // GET: ShoppingCarts
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View(_shoppingCartService.GetAll());
         }
 
-        // GET: ShoppingCarts/Details/5
         public IActionResult Details(Guid id)
         {
             var shoppingCart = _shoppingCartService.GetById(id);
@@ -37,19 +43,14 @@ namespace PocketCartApp.Web.Controllers
             {
                 return NotFound();
             }
-
             return View(shoppingCart);
         }
 
-        // GET: ShoppingCarts/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: ShoppingCarts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("CashierOnShift,Id")] ShoppingCart shoppingCart)
@@ -64,7 +65,6 @@ namespace PocketCartApp.Web.Controllers
         }
 
 
-        // POST: ShoppingCarts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(Guid id)
@@ -76,7 +76,78 @@ namespace PocketCartApp.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public IActionResult CartIndex()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            var shoppingCart = _shoppingCartService.GetByUserIdWithIncludedPrducts(userId!);
 
+            var dto = new ShoppingCartDTO
+            {
+                ProductsInCart = shoppingCart?.ProductsInCart?.ToList() ?? new List<ProductInShoppingCart>()
+            };
+
+            return View(dto);
+        }
+
+        [HttpPost]
+        public IActionResult ClearCart(string cashierCode)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var cart = _shoppingCartService.GetByUserIdWithIncludedProducts(userId);
+
+            if (cart == null ||
+                cart.ProductsInCart == null ||
+                !cart.ProductsInCart.Any())
+            {
+                TempData["Error"] = "Cart is already empty.";
+                return RedirectToAction("CartIndex");
+            }
+
+            _shoppingCartService.ClearCart(userId);
+
+            TempData["Success"] = "Cart cleared successfully.";
+
+            return RedirectToAction("CartIndex");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateCartQuantity(Guid productId, double quantity)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
+
+            _shoppingCartService.UpdateQuantity(userId, productId, quantity);
+
+            return Ok();
+        }
+
+        public IActionResult Checkout()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var receiptId = _shoppingCartService.PrintReceipt(userId);
+
+            if (receiptId == Guid.Empty)
+            {
+                TempData["Error"] = "Cart is empty. Cannot print receipt.";
+                return RedirectToAction("CartIndex");
+            }
+
+            return RedirectToAction(nameof(CartIndex), new {receiptId});
+        }
+
+        public IActionResult Scanner()
+        {
+            return View();
+        }
     }
 }
